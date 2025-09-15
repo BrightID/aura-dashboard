@@ -132,3 +132,19 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+@keyframes grow {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(100);
+    opacity: 0;
+  }
+}
+
+.animate-grow {
+  animation: grow 0.6s ease-out forwards;
+}
