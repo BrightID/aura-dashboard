@@ -23,8 +23,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, EditIcon, PlusCircleIcon } from "lucide-react"
 import _ from "lodash"
+import { ProjectModal } from "./project-modal"
 
 export type Project = {
   id: number
@@ -84,12 +85,26 @@ const columns: ColumnDef<Project>[] = [
     header: "Status",
     cell: ({ row }) => (row.original.isActive ? "Active" : "Inactive"),
   },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      <Button
+        variant="ghost"
+        size="sm"
+        // onClick={() => row.original.onEdit(row.original)}
+      >
+        <EditIcon className="h-4 w-4" />
+      </Button>
+    ),
+  },
 ]
 
 export function ProjectsTable({ data }: { data: Project[] }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [filter, setFilter] = useState("")
   const [columnVisibility, setColumnVisibility] = useState({})
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
 
   const debouncedSetFilter = useCallback(
     (value: string) => setFilter(value),
@@ -103,6 +118,17 @@ export function ProjectsTable({ data }: { data: Project[] }) {
       ),
     [filter]
   )
+
+  const handleSave = (project: Project) => {
+    if (project.id) {
+    } else {
+    }
+  }
+
+  const handleEdit = (project: Project) => {
+    setSelectedProject(project)
+    setIsModalOpen(true)
+  }
 
   const table = useReactTable({
     data: filteredData,
@@ -148,7 +174,15 @@ export function ProjectsTable({ data }: { data: Project[] }) {
                 ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button>Create Project</Button>
+          <Button
+            onClick={() => {
+              setSelectedProject(null)
+              setIsModalOpen(true)
+            }}
+          >
+            <PlusCircleIcon />
+            Create Project
+          </Button>
         </div>
       </div>
       <div className="rounded-md border">
@@ -196,6 +230,12 @@ export function ProjectsTable({ data }: { data: Project[] }) {
           </TableBody>
         </Table>
       </div>
+      <ProjectModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        project={selectedProject}
+      />
     </div>
   )
 }
