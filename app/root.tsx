@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner"
 
 import type { Route } from "./+types/root"
 import "./app.css"
+import { ThemeProvider } from "./components/theme-provider"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -34,8 +35,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen flex items-center justify-center bg-gray-50">
-        {children}
+      <body className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <ThemeProvider>{children}</ThemeProvider>
         <Toaster />
         <ScrollRestoration />
         <Scripts />
