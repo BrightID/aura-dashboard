@@ -5,52 +5,56 @@ import { FadeIn } from "~/components/animations"
 import { copyToClipboard } from "~/utils/clipboard"
 import {
   generateDeeplink,
-  sponsor,
   userSponsorshipStatus,
 } from "brightid_sdk_v6/dist/appMethods"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useUser } from "~/store"
 import { useQuery } from "@tanstack/react-query"
-import { toHex } from "viem"
+import { privateKeyToAccount, type Address } from "viem/accounts"
 import { Buffer } from "buffer"
+import { brightIdSponsor } from "~/utils/brightid"
+import { generatePrivateKey } from "viem/accounts"
 
 const appId = "AuraDashboard"
 
 export default function LoginWithBrightId() {
   const [universalLink, setUniversalLink] = useState("")
   const [qrCodeSize, setQrCodeSize] = useState(400)
-  const [wallet, setWallet] = useState({
-    publicKey: "",
-    privateKey: "",
-  })
   const user = useUser()
+
+  const [userSig, setUserSig] = useState("")
 
   const {} = useQuery({
     queryKey: [
       "sponsorship",
-      user.appUserId ?? "app-userid",
-      user.privateKey ?? "private-key",
+      user.appUserId ?? "",
+      user.privateKey ?? "",
       appId,
     ],
-    enabled: !!(user.appUserId && user.privateKey),
+    enabled: !!user.privateKey,
     // refetchInterval: 3000,
     queryFn: async () => {
-      const userId = user.appUserId
       try {
-        if (!user.privateKey || !userId) return
+        console.log("querying")
+        if (!user.privateKey) return
 
-        console.log([user.privateKey, appId, userId])
+        const account = privateKeyToAccount(user.privateKey as Address)
 
-        const res = await sponsor(user.privateKey, appId, userId)
-        console.log("Sponsor response:", res)
+        const sig = await account.signMessage({
+          message: account.address,
+        })
 
-        try {
-          const status = await userSponsorshipStatus(userId)
-          console.log("Sponsorship status:", status)
-        } catch (statusError) {
-          console.error("Sponsorship status error:", statusError)
-        }
+        const res = await brightIdSponsor(sig, appId, account.publicKey)
+
+        console.log({ res })
+
+        //   try {
+        //     const status = await userSponsorshipStatus(userId)
+        //     console.log("Sponsorship status:", status)
+        //   } catch (statusError) {
+        //     console.error("Sponsorship status error:", statusError)
+        //   }
       } catch (error) {
         console.error("Sponsor error:", error)
         toast.error("Failed to sponsor user", {
@@ -71,20 +75,11 @@ export default function LoginWithBrightId() {
   }
 
   const generateBrightIDLink = useCallback(() => {
-    const randomKey = toHex(crypto.getRandomValues(new Uint8Array(64)))
-
-    const privateKey = Buffer.from(randomKey.slice(2), "hex").toString("hex")
-
-    setWallet({
-      publicKey: randomKey,
-      privateKey: privateKey,
-    })
-
-    user.updateUserId(randomKey)
+    const privateKey = generatePrivateKey()
 
     user.generatePrivateKey(privateKey)
 
-    const deepLink = generateDeeplink(appId, randomKey)
+    const deepLink = generateDeeplink(appId, privateKey)
     setUniversalLink(deepLink)
   }, [])
 
