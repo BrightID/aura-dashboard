@@ -12,7 +12,7 @@ const ThemeContext = createContext({
 })
 
 export function ThemeProvider({ children }: PropsWithChildren) {
-  const [theme, setTheme] = useState("light")
+  const [theme, setTheme] = useState("dark")
 
   useEffect(() => {
     const root = window.document.documentElement
