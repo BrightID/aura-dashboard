@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, type UseFormReturn } from "react-hook-form"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import {
@@ -61,6 +61,8 @@ const STEPS = [
     fields: ["howDidYouHear", "experience", "useCase"],
   },
 ]
+
+type FormData = z.infer<typeof formSchema>
 
 export default function OnboardingForm() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -146,248 +148,11 @@ export default function OnboardingForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          {currentStep === 1 && (
-            <FieldSet>
-              <FieldLegend>Personal Information</FieldLegend>
-              <FieldGroup>
-                <Field data-invalid={!!form.formState.errors.fullName}>
-                  <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
-                  <Input
-                    id="fullName"
-                    placeholder="John Doe"
-                    aria-invalid={!!form.formState.errors.fullName}
-                    {...form.register("fullName")}
-                  />
-                  <FieldError
-                    errors={
-                      form.formState.errors.fullName
-                        ? [form.formState.errors.fullName]
-                        : undefined
-                    }
-                  />
-                </Field>
+          {currentStep === 1 && <FormStepOne form={form} />}
 
-                <Field data-invalid={!!form.formState.errors.email}>
-                  <FieldLabel htmlFor="email">Email Address</FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="john@example.com"
-                    aria-invalid={!!form.formState.errors.email}
-                    {...form.register("email")}
-                  />
-                  <FieldError
-                    errors={
-                      form.formState.errors.email
-                        ? [form.formState.errors.email]
-                        : undefined
-                    }
-                  />
-                </Field>
+          {currentStep === 2 && <FormStepTwo form={form} />}
 
-                <Field data-invalid={!!form.formState.errors.domain}>
-                  <FieldLabel htmlFor="domain">Domain (Optional)</FieldLabel>
-                  <Input
-                    id="domain"
-                    type="url"
-                    placeholder="https://example.com"
-                    aria-invalid={!!form.formState.errors.domain}
-                    {...form.register("domain")}
-                  />
-                  <FieldDescription>
-                    Your website or project domain if you have one
-                  </FieldDescription>
-                  <FieldError
-                    errors={
-                      form.formState.errors.domain
-                        ? [form.formState.errors.domain]
-                        : undefined
-                    }
-                  />
-                </Field>
-              </FieldGroup>
-            </FieldSet>
-          )}
-
-          {currentStep === 2 && (
-            <FieldSet>
-              <FieldLegend>Professional Details</FieldLegend>
-              <FieldGroup>
-                <Field data-invalid={!!form.formState.errors.role}>
-                  <FieldLabel htmlFor="role">What is your role?</FieldLabel>
-                  <Select
-                    onValueChange={(value) => form.setValue("role", value)}
-                    defaultValue={form.watch("role")}
-                  >
-                    <SelectTrigger
-                      id="role"
-                      aria-invalid={!!form.formState.errors.role}
-                    >
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="developer">Developer</SelectItem>
-                      <SelectItem value="designer">Designer</SelectItem>
-                      <SelectItem value="product-manager">
-                        Product Manager
-                      </SelectItem>
-                      <SelectItem value="researcher">Researcher</SelectItem>
-                      <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="community-organizer">
-                        Community Organizer
-                      </SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FieldError
-                    errors={
-                      form.formState.errors.role
-                        ? [form.formState.errors.role]
-                        : undefined
-                    }
-                  />
-                </Field>
-
-                <Field data-invalid={!!form.formState.errors.organization}>
-                  <FieldLabel htmlFor="organization">
-                    Organization (Optional)
-                  </FieldLabel>
-                  <Input
-                    id="organization"
-                    placeholder="Your company or project name"
-                    {...form.register("organization")}
-                  />
-                  <FieldDescription>
-                    If you're representing an organization or project
-                  </FieldDescription>
-                  <FieldError
-                    errors={
-                      form.formState.errors.organization
-                        ? [form.formState.errors.organization]
-                        : undefined
-                    }
-                  />
-                </Field>
-              </FieldGroup>
-            </FieldSet>
-          )}
-
-          {currentStep === 3 && (
-            <FieldSet>
-              <FieldLegend>About BrightID</FieldLegend>
-              <FieldGroup>
-                <Field data-invalid={!!form.formState.errors.howDidYouHear}>
-                  <FieldLabel htmlFor="howDidYouHear">
-                    How did you hear about BrightID?
-                  </FieldLabel>
-                  <Select
-                    onValueChange={(value) =>
-                      form.setValue("howDidYouHear", value)
-                    }
-                    defaultValue={form.watch("howDidYouHear")}
-                  >
-                    <SelectTrigger
-                      id="howDidYouHear"
-                      aria-invalid={!!form.formState.errors.howDidYouHear}
-                    >
-                      <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="social-media">
-                        Social Media (Twitter, Reddit, etc.)
-                      </SelectItem>
-                      <SelectItem value="search-engine">
-                        Search Engine
-                      </SelectItem>
-                      <SelectItem value="friend-colleague">
-                        Friend or Colleague
-                      </SelectItem>
-                      <SelectItem value="conference-event">
-                        Conference or Event
-                      </SelectItem>
-                      <SelectItem value="blog-article">
-                        Blog or Article
-                      </SelectItem>
-                      <SelectItem value="github">GitHub</SelectItem>
-                      <SelectItem value="podcast">Podcast</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FieldError
-                    errors={
-                      form.formState.errors.howDidYouHear
-                        ? [form.formState.errors.howDidYouHear]
-                        : undefined
-                    }
-                  />
-                </Field>
-
-                <Field data-invalid={!!form.formState.errors.experience}>
-                  <FieldLabel htmlFor="experience">
-                    Experience with decentralized identity
-                  </FieldLabel>
-                  <Select
-                    onValueChange={(value) =>
-                      form.setValue("experience", value)
-                    }
-                    defaultValue={form.watch("experience")}
-                  >
-                    <SelectTrigger
-                      id="experience"
-                      aria-invalid={!!form.formState.errors.experience}
-                    >
-                      <SelectValue placeholder="Select your experience level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="beginner">
-                        Beginner - New to the concept
-                      </SelectItem>
-                      <SelectItem value="intermediate">
-                        Intermediate - Some knowledge
-                      </SelectItem>
-                      <SelectItem value="advanced">
-                        Advanced - Experienced user
-                      </SelectItem>
-                      <SelectItem value="expert">
-                        Expert - Building solutions
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FieldError
-                    errors={
-                      form.formState.errors.experience
-                        ? [form.formState.errors.experience]
-                        : undefined
-                    }
-                  />
-                </Field>
-
-                <Field data-invalid={!!form.formState.errors.useCase}>
-                  <FieldLabel htmlFor="useCase">
-                    What's your primary use case?
-                  </FieldLabel>
-                  <Textarea
-                    id="useCase"
-                    placeholder="Tell us about what you're planning to build or how you intend to use BrightID..."
-                    className="resize-none min-h-[120px]"
-                    aria-invalid={!!form.formState.errors.useCase}
-                    {...form.register("useCase")}
-                  />
-                  <FieldDescription>
-                    Help us understand your goals and how we can support you
-                  </FieldDescription>
-                  <FieldError
-                    errors={
-                      form.formState.errors.useCase
-                        ? [form.formState.errors.useCase]
-                        : undefined
-                    }
-                  />
-                </Field>
-              </FieldGroup>
-            </FieldSet>
-          )}
+          {currentStep === 3 && <FormStepThree form={form} />}
 
           <div className="flex justify-between mt-6 gap-4">
             {currentStep > 1 ? (
@@ -429,5 +194,244 @@ export default function OnboardingForm() {
         </form>
       </CardContent>
     </Card>
+  )
+}
+
+function FormStepOne({ form }: { form: UseFormReturn<FormData> }) {
+  return (
+    <FieldSet>
+      <FieldLegend>Personal Information</FieldLegend>
+      <FieldGroup>
+        <Field data-invalid={!!form.formState.errors.fullName}>
+          <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
+          <Input
+            id="fullName"
+            placeholder="John Doe"
+            aria-invalid={!!form.formState.errors.fullName}
+            {...form.register("fullName")}
+          />
+          <FieldError
+            errors={
+              form.formState.errors.fullName
+                ? [form.formState.errors.fullName]
+                : undefined
+            }
+          />
+        </Field>
+
+        <Field data-invalid={!!form.formState.errors.email}>
+          <FieldLabel htmlFor="email">Email Address</FieldLabel>
+          <Input
+            id="email"
+            type="email"
+            placeholder="john@example.com"
+            aria-invalid={!!form.formState.errors.email}
+            {...form.register("email")}
+          />
+          <FieldError
+            errors={
+              form.formState.errors.email
+                ? [form.formState.errors.email]
+                : undefined
+            }
+          />
+        </Field>
+
+        <Field data-invalid={!!form.formState.errors.domain}>
+          <FieldLabel htmlFor="domain">Domain (Optional)</FieldLabel>
+          <Input
+            id="domain"
+            type="url"
+            placeholder="https://example.com"
+            aria-invalid={!!form.formState.errors.domain}
+            {...form.register("domain")}
+          />
+          <FieldDescription>
+            Your website or project domain if you have one
+          </FieldDescription>
+          <FieldError
+            errors={
+              form.formState.errors.domain
+                ? [form.formState.errors.domain]
+                : undefined
+            }
+          />
+        </Field>
+      </FieldGroup>
+    </FieldSet>
+  )
+}
+
+function FormStepTwo({ form }: { form: UseFormReturn<FormData> }) {
+  return (
+    <FieldSet>
+      <FieldLegend>Professional Details</FieldLegend>
+      <FieldGroup>
+        <Field data-invalid={!!form.formState.errors.role}>
+          <FieldLabel htmlFor="role">What is your role?</FieldLabel>
+          <Select
+            onValueChange={(value) => form.setValue("role", value)}
+            defaultValue={form.watch("role")}
+          >
+            <SelectTrigger
+              id="role"
+              aria-invalid={!!form.formState.errors.role}
+            >
+              <SelectValue placeholder="Select your role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="developer">Developer</SelectItem>
+              <SelectItem value="designer">Designer</SelectItem>
+              <SelectItem value="product-manager">Product Manager</SelectItem>
+              <SelectItem value="researcher">Researcher</SelectItem>
+              <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
+              <SelectItem value="student">Student</SelectItem>
+              <SelectItem value="community-organizer">
+                Community Organizer
+              </SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          <FieldError
+            errors={
+              form.formState.errors.role
+                ? [form.formState.errors.role]
+                : undefined
+            }
+          />
+        </Field>
+
+        <Field data-invalid={!!form.formState.errors.organization}>
+          <FieldLabel htmlFor="organization">
+            Organization (Optional)
+          </FieldLabel>
+          <Input
+            id="organization"
+            placeholder="Your company or project name"
+            {...form.register("organization")}
+          />
+          <FieldDescription>
+            If you're representing an organization or project
+          </FieldDescription>
+          <FieldError
+            errors={
+              form.formState.errors.organization
+                ? [form.formState.errors.organization]
+                : undefined
+            }
+          />
+        </Field>
+      </FieldGroup>
+    </FieldSet>
+  )
+}
+
+function FormStepThree({ form }: { form: UseFormReturn<FormData> }) {
+  return (
+    <FieldSet>
+      <FieldLegend>About BrightID</FieldLegend>
+      <FieldGroup>
+        <Field data-invalid={!!form.formState.errors.howDidYouHear}>
+          <FieldLabel htmlFor="howDidYouHear">
+            How did you hear about BrightID?
+          </FieldLabel>
+          <Select
+            onValueChange={(value) => form.setValue("howDidYouHear", value)}
+            defaultValue={form.watch("howDidYouHear")}
+          >
+            <SelectTrigger
+              id="howDidYouHear"
+              aria-invalid={!!form.formState.errors.howDidYouHear}
+            >
+              <SelectValue placeholder="Select an option" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="social-media">
+                Social Media (Twitter, Reddit, etc.)
+              </SelectItem>
+              <SelectItem value="search-engine">Search Engine</SelectItem>
+              <SelectItem value="friend-colleague">
+                Friend or Colleague
+              </SelectItem>
+              <SelectItem value="conference-event">
+                Conference or Event
+              </SelectItem>
+              <SelectItem value="blog-article">Blog or Article</SelectItem>
+              <SelectItem value="github">GitHub</SelectItem>
+              <SelectItem value="podcast">Podcast</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          <FieldError
+            errors={
+              form.formState.errors.howDidYouHear
+                ? [form.formState.errors.howDidYouHear]
+                : undefined
+            }
+          />
+        </Field>
+
+        <Field data-invalid={!!form.formState.errors.experience}>
+          <FieldLabel htmlFor="experience">
+            Experience with decentralized identity
+          </FieldLabel>
+          <Select
+            onValueChange={(value) => form.setValue("experience", value)}
+            defaultValue={form.watch("experience")}
+          >
+            <SelectTrigger
+              id="experience"
+              aria-invalid={!!form.formState.errors.experience}
+            >
+              <SelectValue placeholder="Select your experience level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="beginner">
+                Beginner - New to the concept
+              </SelectItem>
+              <SelectItem value="intermediate">
+                Intermediate - Some knowledge
+              </SelectItem>
+              <SelectItem value="advanced">
+                Advanced - Experienced user
+              </SelectItem>
+              <SelectItem value="expert">
+                Expert - Building solutions
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <FieldError
+            errors={
+              form.formState.errors.experience
+                ? [form.formState.errors.experience]
+                : undefined
+            }
+          />
+        </Field>
+
+        <Field data-invalid={!!form.formState.errors.useCase}>
+          <FieldLabel htmlFor="useCase">
+            What's your primary use case?
+          </FieldLabel>
+          <Textarea
+            id="useCase"
+            placeholder="Tell us about what you're planning to build or how you intend to use BrightID..."
+            className="resize-none min-h-[120px]"
+            aria-invalid={!!form.formState.errors.useCase}
+            {...form.register("useCase")}
+          />
+          <FieldDescription>
+            Help us understand your goals and how we can support you
+          </FieldDescription>
+          <FieldError
+            errors={
+              form.formState.errors.useCase
+                ? [form.formState.errors.useCase]
+                : undefined
+            }
+          />
+        </Field>
+      </FieldGroup>
+    </FieldSet>
   )
 }
