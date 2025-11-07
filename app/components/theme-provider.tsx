@@ -7,7 +7,7 @@ import {
 } from "react"
 
 const ThemeContext = createContext({
-  theme: "light",
+  theme: "dark",
   setTheme: (theme: string) => {},
 })
 
