@@ -3,9 +3,13 @@ import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { SidebarTrigger } from "~/components/ui/sidebar"
 import { useTheme } from "~/components/theme-provider"
+import { logUserOut } from "~/lib/auth-actions"
+import { useNavigate } from "react-router"
 
 export function SiteHeader() {
   const { theme, setTheme } = useTheme()
+
+  const navigate = useNavigate()
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -29,7 +33,14 @@ export function SiteHeader() {
             )}
           </Button>
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <Button variant={"outline"} className="dark:text-foreground">
+            <Button
+              onClick={() => {
+                logUserOut()
+                navigate("/")
+              }}
+              variant={"outline"}
+              className="dark:text-foreground"
+            >
               <LogOutIcon />
               Logout
             </Button>
