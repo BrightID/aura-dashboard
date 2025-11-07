@@ -6,6 +6,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react"
 import type { User } from "firebase/auth"
+import { useNavigate } from "react-router"
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
@@ -23,9 +24,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar"
+import { logUserOut } from "~/lib/auth-actions"
 
 export function NavUser({ user }: { user: User | null | undefined }) {
   const { isMobile } = useSidebar()
+
+  const navigate = useNavigate()
 
   if (!user) return null
 
@@ -97,7 +101,12 @@ export function NavUser({ user }: { user: User | null | undefined }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                logUserOut()
+                navigate("/")
+              }}
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>

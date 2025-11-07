@@ -10,55 +10,52 @@ import { Label } from "@/components/ui/label"
 import { Input } from "~/components/ui/input"
 import { loginWithApple, loginWithGoogle } from "~/lib/auth-actions"
 import { auth } from "~/lib/firebase"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod"
 import { Separator } from "~/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth"
 import { toast } from "sonner"
 
-const formValidation = z.object({
+const formSchema = z.object({
   email: z.email(),
   password: z.string().min(6),
 })
 
+type FormData = z.infer<typeof formSchema>
+
 function LoginScreen() {
   const [user] = useAuthState(auth)
   const navigate = useNavigate()
-  const [isSignUp, setIsSignUp] = useState(false)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(formValidation),
-  })
+
+  const loginForm = useForm<FormData>({ resolver: zodResolver(formSchema) })
+  const signupForm = useForm<FormData>({ resolver: zodResolver(formSchema) })
 
   useEffect(() => {
     if (user) navigate("/dashboard")
   }, [user, navigate])
 
-  const onSubmit = async (data: { email: string; password: string }) => {
+  const onLogin = async (data: FormData) => {
     try {
-      if (isSignUp) {
-        const user = await createUserWithEmailAndPassword(
-          auth,
-          data.email,
-          data.password
-        )
-
-        navigate("/onboarding")
-      } else {
-        await signInWithEmailAndPassword(auth, data.email, data.password)
-      }
+      await signInWithEmailAndPassword(auth, data.email, data.password)
     } catch (e) {
-      toast((e as Error).message, {})
+      toast((e as Error).message)
+    }
+  }
+
+  const onSignup = async (data: FormData) => {
+    try {
+      await createUserWithEmailAndPassword(auth, data.email, data.password)
+      navigate("/onboarding")
+    } catch (e) {
+      toast((e as Error).message)
     }
   }
 
@@ -66,78 +63,118 @@ function LoginScreen() {
     <Card className="max-w-md hover-lift shadow-2xl relative z-10 opacity-100 w-[126%] mx-[0] border-transparent">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-3xl font-bold font-sans text-card-foreground">
-          {isSignUp ? "Create Account" : "Welcome Back"}
+          Welcome
         </CardTitle>
         <CardDescription className="text-card-foreground/70 font-sans">
-          {isSignUp ? "Sign up to get started" : "Sign in to continue"}
+          Sign in or create an account
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label
-              htmlFor="email"
-              className="text-sm font-medium text-card-foreground font-sans"
+        <Tabs defaultValue="login" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Sign In</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="login" className="space-y-4">
+            <form
+              onSubmit={loginForm.handleSubmit(onLogin)}
+              className="space-y-4"
             >
-              Email
-            </Label>
-            <Input
-              {...register("email")}
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs">{errors.email.message}</p>
-            )}
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="login-email">Email</Label>
+                <Input
+                  {...loginForm.register("email")}
+                  id="login-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
+                />
+                {loginForm.formState.errors.email && (
+                  <p className="text-red-500 text-xs">
+                    {loginForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="password"
-              className="text-sm font-medium text-card-foreground font-sans"
+              <div className="space-y-2">
+                <Label htmlFor="login-password">Password</Label>
+                <Input
+                  {...loginForm.register("password")}
+                  id="login-password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
+                />
+                {loginForm.formState.errors.password && (
+                  <p className="text-red-500 text-xs">
+                    {loginForm.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
+              >
+                Sign In
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="signup" className="space-y-4">
+            <form
+              onSubmit={signupForm.handleSubmit(onSignup)}
+              className="space-y-4"
             >
-              Password
-            </Label>
-            <Input
-              {...register("password")}
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
-            />
-            {errors.password && (
-              <p className="text-red-500 text-xs">{errors.password.message}</p>
-            )}
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="signup-email">Email</Label>
+                <Input
+                  {...signupForm.register("email")}
+                  id="signup-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
+                />
+                {signupForm.formState.errors.email && (
+                  <p className="text-red-500 text-xs">
+                    {signupForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
 
-          <Button
-            type="submit"
-            className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
-          >
-            {isSignUp ? "Sign Up" : "Sign In"}
-          </Button>
-        </form>
+              <div className="space-y-2">
+                <Label htmlFor="signup-password">Password</Label>
+                <Input
+                  {...signupForm.register("password")}
+                  id="signup-password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="border-white/40 bg-white/10 placeholder:text-card-foreground/50 text-card-foreground py-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white/15 transition-all duration-200"
+                />
+                {signupForm.formState.errors.password && (
+                  <p className="text-red-500 text-xs">
+                    {signupForm.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
 
-        <Button
-          variant="link"
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="w-full text-sm text-card-foreground/70"
-        >
-          {isSignUp
-            ? "Already have an account? Sign in"
-            : "No account? Sign up"}
-        </Button>
+              <Button
+                type="submit"
+                className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
+              >
+                Sign Up
+              </Button>
+            </form>
+          </TabsContent>
+        </Tabs>
 
         <Separator />
-        <div className="relative">
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="px-2 text-card-foreground/60 font-sans">
-              Or continue with
-            </span>
-          </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="px-2 text-card-foreground/60 font-sans">
+            Or continue with
+          </span>
         </div>
 
         <div className="space-y-3">

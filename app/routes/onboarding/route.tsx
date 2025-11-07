@@ -28,24 +28,30 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { toast } from "sonner"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { CheckIcon, ChevronLeft, ChevronRight } from "lucide-react"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
+import { useMutation } from "@tanstack/react-query"
+import { auth, db, fbDb, writeData } from "~/lib/firebase"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { addDoc, collection } from "firebase/firestore"
 
 const formSchema = z.object({
-  fullName: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.email({
-    message: "Please enter a valid email address.",
-  }),
-  role: z.string("Please select your role."),
+  fullName: z.string().optional().nullable(),
+  email: z
+    .email({
+      message: "Please enter a valid email address.",
+    })
+    .optional()
+    .nullable(),
+  role: z.string("Please select your role.").optional(),
   organization: z.string().optional(),
   howDidYouHear: z.string("Please tell us how you found BrightID."),
   useCase: z
     .string()
-    .min(10, "Please provide at least 10 characters describing your use case."),
-  experience: z.string("Please select your experience level."),
+    .min(10, "Please provide at least 10 characters describing your use case.")
+    .optional(),
+  experience: z.string("Please select your experience level.").optional(),
   domain: z
     .url("Please enter a valid URL (e.g., https://example.com)")
     .optional()
@@ -67,11 +73,25 @@ type FormData = z.infer<typeof formSchema>
 export default function OnboardingForm() {
   const [currentStep, setCurrentStep] = useState(1)
 
+  const [user] = useAuthState(auth)
+
+  const navigate = useNavigate()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: async (data: FormData) => {
+      const onboardingCollectionRef = collection(db, "onboarding")
+      const docRef = await addDoc(onboardingCollectionRef, {
+        ...data,
+        createdAt: new Date(),
+      })
+
+      console.log("Document written with ID: ", docRef.id)
+    },
+    mutationKey: ["create-onboarding"],
+  })
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
       domain: "",
       organization: "",
       useCase: "",
@@ -88,6 +108,7 @@ export default function OnboardingForm() {
 
   async function handleNext() {
     const isValid = await validateStep(currentStep)
+
     if (isValid && currentStep < STEPS.length) {
       setCurrentStep(currentStep + 1)
     }
@@ -101,11 +122,13 @@ export default function OnboardingForm() {
     }
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await mutateAsync(values)
+
     toast("Welcome aboard!", {
       description: "Your information has been submitted successfully.",
     })
+    navigate("/dashboard")
   }
 
   return (
@@ -118,7 +141,7 @@ export default function OnboardingForm() {
 
         <div className="flex items-center justify-between mt-6">
           {STEPS.map((step, index) => (
-            <div key={step.id} className="flex items-center flex-1">
+            <Fragment key={step.id}>
               <div className="flex flex-col items-center flex-1">
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
@@ -142,7 +165,7 @@ export default function OnboardingForm() {
                   className={`h-0.5 flex-1 mx-2 transition-colors ${currentStep > step.id ? "bg-primary" : "bg-muted"}`}
                 />
               )}
-            </div>
+            </Fragment>
           ))}
         </div>
       </CardHeader>
@@ -185,7 +208,12 @@ export default function OnboardingForm() {
                 <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             ) : (
-              <Button type="button" onClick={handleNext} className="flex-1">
+              <Button
+                disabled={isPending}
+                type="button"
+                onClick={handleNext}
+                className="flex-1"
+              >
                 Complete Onboarding
                 <CheckIcon className="w-4 h-4 ml-2" />
               </Button>
@@ -238,7 +266,7 @@ function FormStepOne({ form }: { form: UseFormReturn<FormData> }) {
         </Field>
 
         <Field data-invalid={!!form.formState.errors.domain}>
-          <FieldLabel htmlFor="domain">Domain (Optional)</FieldLabel>
+          <FieldLabel htmlFor="domain">Domain</FieldLabel>
           <Input
             id="domain"
             type="url"
@@ -302,9 +330,7 @@ function FormStepTwo({ form }: { form: UseFormReturn<FormData> }) {
         </Field>
 
         <Field data-invalid={!!form.formState.errors.organization}>
-          <FieldLabel htmlFor="organization">
-            Organization (Optional)
-          </FieldLabel>
+          <FieldLabel htmlFor="organization">Organization</FieldLabel>
           <Input
             id="organization"
             placeholder="Your company or project name"

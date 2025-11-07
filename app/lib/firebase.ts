@@ -6,6 +6,7 @@ import {
   RecaptchaVerifier,
   type Auth,
 } from "firebase/auth"
+import { getDatabase, ref, set } from "firebase/database"
 import { getFirestore, Firestore } from "firebase/firestore"
 import type { ReactNode } from "react"
 // import { getAnalytics } from "firebase/analytics";
@@ -41,6 +42,12 @@ db = getFirestore(app)
 
 export const setupRecaptcha = (containerId: string | HTMLElement) => {
   return new RecaptchaVerifier(auth, containerId, { size: "invisible" })
+}
+
+export const fbDb = getDatabase(app)
+
+export function writeData(path: string, data: unknown) {
+  return set(ref(fbDb, path), data)
 }
 
 export { app, auth, db }
