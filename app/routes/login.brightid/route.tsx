@@ -3,58 +3,42 @@ import { QRCode } from "react-qrcode-logo"
 import { Link } from "react-router"
 import { FadeIn } from "~/components/animations"
 import { copyToClipboard } from "~/utils/clipboard"
-import {
-  generateDeeplink,
-  userSponsorshipStatus,
-} from "brightid_sdk_v6/dist/appMethods"
+import { generateDeeplink } from "brightid_sdk_v6/dist/appMethods"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useUser } from "~/store"
 import { useQuery } from "@tanstack/react-query"
-import { privateKeyToAccount, type Address } from "viem/accounts"
-import { Buffer } from "buffer"
 import { brightIdSponsor } from "~/utils/brightid"
 import { generatePrivateKey } from "viem/accounts"
+import { Buffer } from "buffer"
+import { v4 } from "uuid"
+import tweetnacl from "tweetnacl"
+import { b64FromUint8Array, strToUint8Array } from "~/utils/crypto"
 
 const appId = "AuraDashboard"
+
+const { sign } = tweetnacl
 
 export default function LoginWithBrightId() {
   const [universalLink, setUniversalLink] = useState("")
   const [qrCodeSize, setQrCodeSize] = useState(400)
+  const [appUserId, setAppUserId] = useState(v4().replace(/-/g, ""))
   const user = useUser()
 
   const [userSig, setUserSig] = useState("")
 
   const {} = useQuery({
-    queryKey: [
-      "sponsorship",
-      user.appUserId ?? "",
-      user.privateKey ?? "",
-      appId,
-    ],
-    enabled: !!user.privateKey,
-    // refetchInterval: 3000,
+    queryKey: ["sponsorship", appUserId],
     queryFn: async () => {
       try {
-        console.log("querying")
-        if (!user.privateKey) return
+        const { publicKey, secretKey } = sign.keyPair()
 
-        const account = privateKeyToAccount(user.privateKey as Address)
-
-        const sig = await account.signMessage({
-          message: account.address,
-        })
-
-        const res = await brightIdSponsor(sig, appId, account.publicKey)
-
-        console.log({ res })
-
-        //   try {
-        //     const status = await userSponsorshipStatus(userId)
-        //     console.log("Sponsorship status:", status)
-        //   } catch (statusError) {
-        //     console.error("Sponsorship status error:", statusError)
-        //   }
+        const res = await brightIdSponsor(
+          Buffer.from(secretKey).toString("base64"),
+          appId,
+          Buffer.from(publicKey).toString("base64")
+        )
+        console.log(res)
       } catch (error) {
         console.error("Sponsor error:", error)
         toast.error("Failed to sponsor user", {

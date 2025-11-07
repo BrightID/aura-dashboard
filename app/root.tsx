@@ -40,9 +40,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            {children}
+
+            <Toaster />
+          </ThemeProvider>
         </QueryClientProvider>
-        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
