@@ -1,4 +1,9 @@
-import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore"
+import { db, auth } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -11,12 +16,30 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
 import type { Project } from "./projects-table"
+
+const schema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string(),
+  image: z.url("Invalid URL").or(z.literal("")),
+  requirementLevel: z.coerce.number().int().min(1, "Min 1"),
+  deadline: z.date(),
+  isActive: z.boolean(),
+})
+
+type FormData = z.infer<typeof schema>
 
 export function ProjectModal({
   isOpen,
   onClose,
-  onSave,
   project = null,
 }: {
   isOpen: boolean
@@ -24,105 +47,158 @@ export function ProjectModal({
   onSave: (project: Project) => void
   project?: Project | null
 }) {
-  const [formData, setFormData] = useState<Project>(
-    project || {
-      id: 0,
-      name: "",
-      description: "",
-      requirementLevel: 1,
-      deadline: "",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      isActive: true,
-    }
-  )
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    watch,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: project
+      ? {
+          name: project.name,
+          description: project.description,
+          image: project.image || "",
+          requirementLevel: project.requirementLevel,
+          deadline: project.deadline ? new Date(project.deadline) : new Date(),
+          isActive: project.isActive,
+        }
+      : {
+          name: "",
+          description: "",
+          image: "",
+          requirementLevel: 1,
+          deadline: new Date(),
+          isActive: true,
+        },
+  })
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const deadline = watch("deadline")
+  const queryClient = useQueryClient()
 
-  const handleSwitchChange = (checked: boolean) => {
-    setFormData((prev) => ({ ...prev, isActive: checked }))
-  }
+  const mutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const payload = {
+        ...data,
+        deadline: data.deadline.toISOString(),
+        userId: auth.currentUser?.uid,
+        createdAt: project?.createdAt || new Date(),
+        updatedAt: new Date(),
+      }
 
-  const handleSubmit = () => {
-    onSave({
-      ...formData,
-      id: project ? project.id : Date.now(),
-      requirementLevel: Number(formData.requirementLevel),
-      updatedAt: new Date().toISOString(),
-    })
-    onClose()
-  }
+      if (project?.id) {
+        await updateDoc(doc(db, "projects", project.id), payload)
+        return { ...project, ...payload }
+      } else {
+        const docRef = await addDoc(collection(db, "projects"), payload)
+        return { id: docRef.id, ...payload }
+      }
+    },
+    onSuccess: (saved) => {
+      onClose()
+      reset()
+
+      queryClient.invalidateQueries({ queryKey: ["user-projects"] })
+    },
+  })
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{project ? "Edit Project" : "Add Project"}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+
+        <form onSubmit={handleSubmit((d) => mutation.mutate(d))}>
+          <div className="grid gap-4 py-4">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" {...register("name")} />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea id="description" {...register("description")} />
+            </div>
+
+            <div>
+              <Label htmlFor="image">Image URL</Label>
+              <Input
+                id="image"
+                {...register("image")}
+                placeholder="https://example.com/image.jpg"
+              />
+              {errors.image && (
+                <p className="text-red-500 text-sm">{errors.image.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="requirementLevel">Requirement Level</Label>
+              <Input
+                id="requirementLevel"
+                type="number"
+                min="1"
+                {...register("requirementLevel")}
+              />
+              {errors.requirementLevel && (
+                <p className="text-red-500 text-sm">
+                  {errors.requirementLevel.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label>Deadline</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {deadline ? format(deadline, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={deadline}
+                    onSelect={(d) => d && setValue("deadline", d)}
+                  />
+                </PopoverContent>
+              </Popover>
+              {errors.deadline && (
+                <p className="text-red-500 text-sm">
+                  {errors.deadline.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="isActive">Active</Label>
+              <Switch
+                id="isActive"
+                checked={watch("isActive")}
+                onCheckedChange={(v) => setValue("isActive", v)}
+              />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <Label htmlFor="requirementLevel">Requirement Level</Label>
-            <Input
-              id="requirementLevel"
-              name="requirementLevel"
-              type="number"
-              min="1"
-              value={formData.requirementLevel}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="deadline">Deadline</Label>
-            <Input
-              id="deadline"
-              name="deadline"
-              type="date"
-              value={formData.deadline}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="isActive">Active</Label>
-            <Switch
-              disabled
-              id="isActive"
-              checked={formData.isActive}
-              onCheckedChange={handleSwitchChange}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>Save</Button>
-        </DialogFooter>
+
+          <DialogFooter>
+            <Button variant="outline" type="button" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={mutation.isPending}>
+              {mutation.isPending ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

@@ -17,18 +17,12 @@ import {
   type SortingState,
 } from "@tanstack/react-table"
 import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { ArrowUpDown, EditIcon, PlusCircleIcon } from "lucide-react"
 import _ from "lodash"
 import { ProjectModal } from "./project-modal"
 
 export type Project = {
-  id: number
+  id: string
   name: string
   description: string
   requirementLevel: number
@@ -116,7 +110,7 @@ export function ProjectsTable({ data }: { data: Project[] }) {
       data.filter((project) =>
         project.name.toLowerCase().includes(filter.toLowerCase())
       ),
-    [filter]
+    [filter, data]
   )
 
   const handleSave = (project: Project) => {
@@ -153,27 +147,6 @@ export function ProjectsTable({ data }: { data: Project[] }) {
           className="max-w-sm"
         />
         <div className="flex items-center space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Columns</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.columnDef.header as string}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
           <Button
             onClick={() => {
               setSelectedProject(null)
