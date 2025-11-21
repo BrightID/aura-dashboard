@@ -19,7 +19,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { ArrowUpDown, EditIcon, PlusCircleIcon } from "lucide-react"
 import _ from "lodash"
-import { ProjectModal } from "./project-modal"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { useProjectStore } from "~/store/project-store"
+import { Link } from "react-router"
 
 export type Project = {
   id: string
@@ -98,7 +101,7 @@ export function ProjectsTable({ data }: { data: Project[] }) {
   const [filter, setFilter] = useState("")
   const [columnVisibility, setColumnVisibility] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const { selectedProject, setSelectedProject } = useProjectStore()
 
   const debouncedSetFilter = useCallback(
     (value: string) => setFilter(value),
@@ -112,17 +115,6 @@ export function ProjectsTable({ data }: { data: Project[] }) {
       ),
     [filter, data]
   )
-
-  const handleSave = (project: Project) => {
-    if (project.id) {
-    } else {
-    }
-  }
-
-  const handleEdit = (project: Project) => {
-    setSelectedProject(project)
-    setIsModalOpen(true)
-  }
 
   const table = useReactTable({
     data: filteredData,
@@ -147,15 +139,12 @@ export function ProjectsTable({ data }: { data: Project[] }) {
           className="max-w-sm"
         />
         <div className="flex items-center space-x-2">
-          <Button
-            onClick={() => {
-              setSelectedProject(null)
-              setIsModalOpen(true)
-            }}
-          >
-            <PlusCircleIcon />
-            Create Project
-          </Button>
+          <Link to="/dashboard/projects/new">
+            <Button>
+              <PlusCircleIcon />
+              Create Project
+            </Button>
+          </Link>
         </div>
       </div>
       <div className="rounded-md border">
@@ -178,18 +167,44 @@ export function ProjectsTable({ data }: { data: Project[] }) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              <RadioGroup
+                value={selectedProject?.id || ""}
+                onValueChange={(id) => {
+                  const proj = data.find((p) => p.id === id) || null
+                  setSelectedProject(proj)
+                }}
+              >
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell, i) => (
+                      <TableCell key={cell.id}>
+                        {i === 0 ? (
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem
+                              value={row.original.id}
+                              id={row.original.id}
+                            />
+                            <Label
+                              htmlFor={row.original.id}
+                              className="cursor-pointer flex-1"
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </Label>
+                          </div>
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </RadioGroup>
             ) : (
               <TableRow>
                 <TableCell
@@ -203,12 +218,6 @@ export function ProjectsTable({ data }: { data: Project[] }) {
           </TableBody>
         </Table>
       </div>
-      <ProjectModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
-        project={selectedProject}
-      />
     </div>
   )
 }
