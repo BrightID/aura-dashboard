@@ -8,4 +8,7 @@ export default defineConfig({
     APP_VERSION: JSON.stringify(process.env.npm_package_version),
   },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  build: {
+    rollupOptions: {},
+  },
 })

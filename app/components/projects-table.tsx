@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -17,26 +17,21 @@ import {
   type SortingState,
 } from "@tanstack/react-table"
 import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ArrowUpDown, EditIcon, PlusCircleIcon } from "lucide-react"
-import _ from "lodash"
-import { ProjectModal } from "./project-modal"
+import { ArrowUpDown, Edit2, Eye, Plus } from "lucide-react"
+import { Link } from "react-router"
+import { useProjectStore } from "~/store/project-store"
+import { format } from "date-fns"
 
 export type Project = {
-  id: number
+  id: string
   name: string
   description: string
-  requirementLevel: number
-  deadline: string
-  createdAt: string
-  updatedAt: string
+  requirementLevel: number | null
+  deadline: string | null
   isActive: boolean
-  image?: string
+  logoUrl?: string | null
+  selectedPlanId?: number | null
+  createdAt: string
 }
 
 const columns: ColumnDef<Project>[] = [
@@ -45,55 +40,84 @@ const columns: ColumnDef<Project>[] = [
     header: ({ column }) => (
       <Button
         variant="ghost"
+        size="sm"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Name
+        Project
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center gap-3">
+        {row.original.logoUrl ? (
+          <img
+            src={row.original.logoUrl}
+            alt={row.original.name}
+            className="h-8 w-8 rounded-full object-cover"
+          />
+        ) : (
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+            {row.original.name[0]}
+          </div>
+        )}
+        <span className="font-medium">{row.original.name}</span>
+      </div>
     ),
   },
   {
     accessorKey: "description",
     header: "Description",
-  },
-  {
-    accessorKey: "requirementLevel",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Requirement Level
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+    cell: ({ row }) => (
+      <p className="text-sm text-muted-foreground line-clamp-2">
+        {row.original.description}
+      </p>
     ),
   },
   {
-    accessorKey: "deadline",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Deadline
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    accessorKey: "remainingtokens",
+    header: "Remaining Tokens",
+    cell: ({ getValue }) => getValue() ?? "-",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ getValue }) =>
+      getValue() ? format(new Date(getValue() as string), "PP") : "-",
+  },
+  {
+    accessorKey: "selectedPlanId",
+    header: "Plan",
+    cell: ({ getValue }) => {
+      const planId = getValue() as number | null
+      return planId === null ? (
+        <span className="text-green-600 font-medium">Free</span>
+      ) : (
+        `#${planId}`
+      )
+    },
   },
   {
     accessorKey: "isActive",
     header: "Status",
-    cell: ({ row }) => (row.original.isActive ? "Active" : "Inactive"),
+    cell: ({ getValue }) => (
+      <span
+        className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+          getValue()
+            ? "bg-green-100 text-green-800"
+            : "bg-gray-100 text-gray-800"
+        }`}
+      >
+        {getValue() ? "Active" : "Inactive"}
+      </span>
+    ),
   },
   {
     id: "actions",
     cell: ({ row }) => (
-      <Button
-        variant="ghost"
-        size="sm"
-        // onClick={() => row.original.onEdit(row.original)}
-      >
-        <EditIcon className="h-4 w-4" />
+      <Button variant="ghost" size="icon" asChild>
+        <Link to={`/dashboard/projects/${row.original.id}`}>
+          <Eye className="h-4 w-4" />
+        </Link>
       </Button>
     ),
   },
@@ -102,111 +126,63 @@ const columns: ColumnDef<Project>[] = [
 export function ProjectsTable({ data }: { data: Project[] }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [filter, setFilter] = useState("")
-  const [columnVisibility, setColumnVisibility] = useState({})
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-
-  const debouncedSetFilter = useCallback(
-    (value: string) => setFilter(value),
-    []
-  )
+  const { setSelectedProject } = useProjectStore()
 
   const filteredData = useMemo(
     () =>
-      data.filter((project) =>
-        project.name.toLowerCase().includes(filter.toLowerCase())
-      ),
-    [filter]
+      data.filter((p) => p.name.toLowerCase().includes(filter.toLowerCase())),
+    [data, filter]
   )
-
-  const handleSave = (project: Project) => {
-    if (project.id) {
-    } else {
-    }
-  }
-
-  const handleEdit = (project: Project) => {
-    setSelectedProject(project)
-    setIsModalOpen(true)
-  }
 
   const table = useReactTable({
     data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    state: {
-      sorting,
-      columnVisibility,
-    },
+    onSortingChange: setSorting,
+    state: { sorting },
   })
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <Input
-          placeholder="Filter by name..."
+          placeholder="Search projects..."
           value={filter}
-          onChange={(e) => debouncedSetFilter(e.target.value)}
-          className="max-w-sm"
+          onChange={(e) => setFilter(e.target.value)}
+          className="max-w-xs"
         />
-        <div className="flex items-center space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Columns</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.columnDef.header as string}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button
-            onClick={() => {
-              setSelectedProject(null)
-              setIsModalOpen(true)
-            }}
-          >
-            <PlusCircleIcon />
-            Create Project
-          </Button>
-        </div>
+        <Button asChild>
+          <Link to="/dashboard/projects/new">
+            <Plus className="mr-2 h-4 w-4" />
+            New Project
+          </Link>
+        </Button>
       </div>
-      <div className="rounded-md border">
+
+      <div className="rounded-lg border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -221,21 +197,15 @@ export function ProjectsTable({ data }: { data: Project[] }) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-muted-foreground"
                 >
-                  No results.
+                  No projects found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <ProjectModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
-        project={selectedProject}
-      />
     </div>
   )
 }

@@ -5,12 +5,10 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
+import type { User } from "firebase/auth"
+import { useNavigate } from "react-router"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "~/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,17 +24,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar"
+import { logUserOut } from "~/lib/auth-actions"
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
+export function NavUser({ user }: { user: User | null | undefined }) {
   const { isMobile } = useSidebar()
+
+  const navigate = useNavigate()
+
+  if (!user) return null
 
   return (
     <SidebarMenu>
@@ -48,11 +43,16 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage
+                  src={user.photoURL ?? ""}
+                  alt={user.displayName ?? user.email!}
+                />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">
+                  {user.displayName ?? user.email}
+                </span>
                 <span className="text-muted-foreground truncate text-xs">
                   {user.email}
                 </span>
@@ -69,11 +69,16 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage
+                    src={user.photoURL || ""}
+                    alt={user.displayName || user.email!}
+                  />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">
+                    {user.displayName}
+                  </span>
                   <span className="text-muted-foreground truncate text-xs">
                     {user.email}
                   </span>
@@ -96,7 +101,12 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                logUserOut()
+                navigate("/")
+              }}
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>

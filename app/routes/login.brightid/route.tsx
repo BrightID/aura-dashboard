@@ -3,84 +3,79 @@ import { QRCode } from "react-qrcode-logo"
 import { Link } from "react-router"
 import { FadeIn } from "~/components/animations"
 import { copyToClipboard } from "~/utils/clipboard"
-import {
-  generateDeeplink,
-  sponsor,
-  userSponsorshipStatus,
-} from "brightid_sdk_v6/dist/appMethods"
+import { generateDeeplink } from "brightid_sdk_v6/dist/appMethods"
 import { useCallback, useEffect, useState } from "react"
-import { v4 as uuidv4 } from "uuid"
 import { toast } from "sonner"
 import { useUser } from "~/store"
-import { useGenerateKeys } from "~/utils/web3"
+import { useQuery } from "@tanstack/react-query"
+import { brightIdSponsor } from "~/utils/brightid"
+import { generatePrivateKey } from "viem/accounts"
+import { Buffer } from "buffer"
+import { v4 } from "uuid"
+import tweetnacl from "tweetnacl"
+import { b64FromUint8Array, strToUint8Array } from "~/utils/crypto"
 
 const appId = "AuraDashboard"
 
+const { sign } = tweetnacl
+
 export default function LoginWithBrightId() {
   const [universalLink, setUniversalLink] = useState("")
-
   const [qrCodeSize, setQrCodeSize] = useState(400)
-  const { isLoading, keys, signPrivateKey } = useGenerateKeys()
-
+  const [appUserId, setAppUserId] = useState(v4().replace(/-/g, ""))
   const user = useUser()
+
+  const [userSig, setUserSig] = useState("")
+
+  const {} = useQuery({
+    queryKey: ["sponsorship", appUserId],
+    queryFn: async () => {
+      try {
+        const { publicKey, secretKey } = sign.keyPair()
+
+        const res = await brightIdSponsor(
+          Buffer.from(secretKey).toString("base64"),
+          appId,
+          Buffer.from(publicKey).toString("base64")
+        )
+        console.log(res)
+      } catch (error) {
+        console.error("Sponsor error:", error)
+        toast.error("Failed to sponsor user", {
+          description: `${error}`,
+        })
+      }
+
+      return {}
+    },
+  })
 
   const copyQr = () => {
     if (!universalLink) return
-
-    let alertText = ""
-    let clipboardMsg = ""
-
-    alertText = "Open this link with the BrightID app."
-    clipboardMsg = universalLink
-
     copyToClipboard(universalLink)
-
-    toast(alertText, {
-      description: clipboardMsg,
+    toast("Open this link with the BrightID app.", {
+      description: universalLink,
     })
   }
 
   const generateBrightIDLink = useCallback(() => {
-    const contextId = uuidv4()
-    user.updateUserId(contextId)
-    user.generatePrivateKey()
+    const privateKey = generatePrivateKey()
 
-    const deepLink = generateDeeplink(appId, contextId)
+    user.generatePrivateKey(privateKey)
 
+    const deepLink = generateDeeplink(appId, privateKey)
     setUniversalLink(deepLink)
   }, [])
 
   useEffect(() => {
     if (universalLink.length) return
-
     setQrCodeSize(Math.min(window.innerWidth * 0.9 - 40, 270))
     generateBrightIDLink()
   }, [generateBrightIDLink, universalLink])
 
-  useEffect(() => {
-    if (!user.appUserId || !user.privateKey || isLoading || !keys) return
-
-    const userId = user.appUserId
-
-    let interval: NodeJS.Timeout
-    signPrivateKey().then((pk) => {
-      console.log(pk)
-      sponsor(pk, appId, user.appUserId!).then((res) => {
-        console.log(res)
-        interval = setInterval(() => {
-          userSponsorshipStatus(userId).then((res) => console.log(res))
-        }, 5000)
-      })
-    })
-
-    return () => {
-      clearInterval(interval)
-    }
-  }, [user.appUserId, isLoading, keys, user.privateKey])
-
   return (
     <div className="max-w-2xl pt-20 mx-auto">
-      <section className=" text-center mb-6 pl-5 pr-12">
+      <section className="text-center mb-6 pl-5 pr-12">
         <FadeIn delay={0.1}>
           <p data-testid="recovery-title" className="mb-6 text-5xl font-black">
             Login
@@ -88,8 +83,10 @@ export default function LoginWithBrightId() {
         </FadeIn>
         <FadeIn delay={0.15}>
           <p className="text-lg font-medium">
-            <span className="hidden md:block">Scan to log in</span>
-            <span className="block md:hidden">Tap to log in</span>
+            <span className="hidden md:block">
+              Scan to log in with brightid
+            </span>
+            <span className="block md:hidden">Tap to log in with brightid</span>
           </p>
         </FadeIn>
       </section>
@@ -136,7 +133,7 @@ export default function LoginWithBrightId() {
               href={universalLink}
               target="_blank"
               data-testid={universalLink && "import-universal-link"}
-              className="line-clamp-1 text-ellipsis text-left font-medium text-white underline"
+              className="text-left w-sm whitespace-nowrap line-clamp-1 text-sm text-ellipsis font-medium text-white underline"
               rel="noreferrer"
             >
               {universalLink}

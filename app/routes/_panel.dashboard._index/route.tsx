@@ -1,0 +1,35 @@
+import { useQuery } from "@tanstack/react-query"
+import { ProjectsTable, type Project } from "~/components/projects-table"
+import { ProjectUsageChart } from "./components/usage-chart-area"
+import { API_BASE_URL } from "~/constants"
+
+async function getUserProjects() {
+  const res = await fetch(`${API_BASE_URL}/api/projects/list`, {
+    headers: {
+      authorization: `Bearer ${await (await import("firebase/auth")).getAuth().currentUser?.getIdToken()}`,
+    },
+  })
+
+  if (!res.ok) throw new Error("Failed")
+  const json = await res.json()
+  return json.projects as Project[]
+}
+
+export default function PanelDashboard() {
+  const { data, error, isLoading, status } = useQuery({
+    queryFn: () => getUserProjects(),
+    queryKey: ["user-projects"],
+  })
+
+  return (
+    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+      <div className="px-4 lg:px-6">
+        <h3 className="text-xl font-bold mb-5">Projects List</h3>
+        <ProjectsTable data={data ?? []} />
+      </div>
+      <div className="px-4 lg:px-6">
+        <ProjectUsageChart projectId={data?.[0].id ?? ""} />
+      </div>
+    </div>
+  )
+}
