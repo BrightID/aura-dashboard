@@ -38,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <body className="min-h-screen">
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             {children}
