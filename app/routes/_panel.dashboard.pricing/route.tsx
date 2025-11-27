@@ -16,13 +16,9 @@ const plans = [
     yearlyPrice: 0,
     period: "",
     description: "Perfect for testing and small projects.",
-    tokens: 100,
+    tokens: 1000,
     pricePerExcess: 1,
-    features: [
-      "100 verification tokens included",
-      "Basic support",
-      "Standard verification speed",
-    ],
+    features: ["1,000 successful verifications per month", "Basic support"],
     cta: "Start Free",
     popular: false,
     isRecommended: false,
@@ -31,18 +27,16 @@ const plans = [
   {
     name: "Pro",
     icon: Zap,
-    monthlyPrice: 29,
-    yearlyPrice: 290,
+    monthlyPrice: 100,
+    yearlyPrice: 80,
     period: "/month",
     description: "Ideal for growing projects.",
-    tokens: 5000,
-    pricePerExcess: 0.8,
+    tokens: 10000,
+    pricePerExcess: 0.02,
     features: [
-      "5,000 verification tokens",
-      "Excess tokens at $0.8 each",
-      "Priority support",
-      "Faster verification",
-      "Custom branding",
+      "10,000 successful verifications per month",
+      "community support",
+      " $0.02 per successful verification after the first 10,000",
     ],
     cta: "Upgrade to Pro",
     popular: true,
@@ -50,23 +44,21 @@ const plans = [
     order: 1,
   },
   {
-    name: "Enterprise",
+    name: "Premium",
     icon: Crown,
-    monthlyPrice: 99,
-    yearlyPrice: 990,
+    monthlyPrice: 500,
+    yearlyPrice: 400,
     period: "/month",
-    description: "Unlimited scale with premium features.",
-    tokens: 20000,
-    pricePerExcess: 0.5,
+    description: "Best for enterprise projects.",
+    tokens: 100000,
+    pricePerExcess: 0.01,
     features: [
-      "20,000 verification tokens",
-      "Excess tokens at $0.5 each",
-      "Dedicated support",
-      "Highest priority verification",
-      "White-label options",
-      "SLA & uptime guarantee",
+      "100,000 successful verifications per month",
+      "Excess tokens at $0.01 each",
+      "Premium support",
+      "Custom branding",
     ],
-    cta: "Contact Sales",
+    cta: "Upgrade to Premium",
     popular: false,
     isRecommended: false,
     order: 2,
@@ -172,7 +164,7 @@ export default function PricingSection() {
                       <span className="text-muted-foreground text-sm">
                         {plan.period}
                       </span>
-                      {savings !== "0" && isYearly && (
+                      {savings !== 0 && savings !== "0%" && isYearly && (
                         <span className="text-xs text-primary font-medium">
                           Save {savings}%
                         </span>
