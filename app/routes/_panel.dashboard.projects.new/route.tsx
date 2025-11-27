@@ -42,14 +42,20 @@ export default function CreateProjectPage() {
   })
 
   const onSubmit = async (data: FormData) => {
+    const cleanedData = Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [
+        key,
+        value === "" ? undefined : value,
+      ])
+    )
     const token = await getAuth().currentUser?.getIdToken()
-    const res = await fetch(`${API_BASE_URL}/api/projects`, {
+    const res = await fetch(`${API_BASE_URL}/api/projects/create-project`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(cleanedData),
     })
     res.ok
       ? (toast.success("Project created"), navigate("/dashboard"))

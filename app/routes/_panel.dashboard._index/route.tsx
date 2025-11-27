@@ -12,7 +12,7 @@ async function getUserProjects() {
 
   if (!res.ok) throw new Error("Failed")
   const json = await res.json()
-  return json.data as Project[]
+  return json.projects as Project[]
 }
 
 export default function PanelDashboard() {
