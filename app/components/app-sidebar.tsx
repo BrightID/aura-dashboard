@@ -32,13 +32,9 @@ import {
 } from "~/components/ui/sidebar"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "~/lib/firebase"
+import { Link } from "react-router"
 
 const data = {
-  user: {
-    name: "Adam Satallard",
-    email: "adam.stallard@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -46,8 +42,8 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Pricing",
+      url: "/dashboard/pricing",
       icon: IconListDetails,
     },
     {
@@ -157,10 +153,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link to="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Aura Dashboard</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
