@@ -16,8 +16,8 @@ const features = [
     title: "Accountability",
     description:
       "Participants have skin in the game. Poor performance or attack participation results in score drops, quickly removing bad actors from influence.",
-    color: "text-accent",
-    bgColor: "bg-accent/10",
+    color: "text-orange",
+    bgColor: "bg-orange/10",
   },
   {
     icon: Zap,
@@ -32,8 +32,8 @@ const features = [
     title: "Decentralization",
     description:
       "Multiple teams provide redundancy. If one becomes compromised, leagues exclude it and Aura continues operating with remaining teams.",
-    color: "text-accent",
-    bgColor: "bg-accent/10",
+    color: "text-orange",
+    bgColor: "bg-orange/10",
   },
   {
     icon: Globe,
@@ -48,8 +48,8 @@ const features = [
     title: "Reward System",
     description:
       "Evaluation scores provide a convenient scale for monetary rewards distributed to participants within teams, incentivizing quality work.",
-    color: "text-accent",
-    bgColor: "bg-accent/10",
+    color: "text-orange",
+    bgColor: "bg-orange/10",
   },
 ]
 

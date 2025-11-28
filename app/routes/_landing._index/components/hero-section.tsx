@@ -38,14 +38,14 @@ export function HeroSection() {
           }}
         />
         <div
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/20 rounded-full blur-3xl animate-float"
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-orange/20 rounded-full blur-3xl animate-float"
           style={{
             animationDelay: "-3s",
             transform:
               "translate(calc(var(--mouse-x, 0) * -1), calc(var(--mouse-y, 0) * -1))",
           }}
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 via-transparent to-accent/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/10 via-transparent to-orange/10 rounded-full blur-3xl" />
       </div>
 
       {/* Grid pattern */}
@@ -61,7 +61,7 @@ export function HeroSection() {
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight mb-6">
           <span className="block">Identity Without</span>
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent animate-gradient glow-text">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange animate-gradient glow-text">
             Friction
           </span>
         </h1>

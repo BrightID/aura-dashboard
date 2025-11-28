@@ -115,7 +115,7 @@ export function HowItWorksSection() {
             className={`transition-all duration-700 delay-300 ${isInView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}
           >
             <div className="sticky top-24">
-              <div className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 via-card to-accent/20 border border-border p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
+              <div className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 via-card to-orange/20 border border-border p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
                 {/* Background animation */}
                 <div className="absolute inset-0 opacity-30">
                   {[...Array(20)].map((_, i) => (

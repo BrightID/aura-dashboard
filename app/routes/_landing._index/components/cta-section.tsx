@@ -20,7 +20,7 @@ export function CTASection() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
           <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl animate-pulse" />
           <div
-            className="absolute inset-12 rounded-full bg-accent/20 blur-3xl animate-pulse"
+            className="absolute inset-12 rounded-full bg-orange/20 blur-3xl animate-pulse"
             style={{ animationDelay: "1s" }}
           />
         </div>
