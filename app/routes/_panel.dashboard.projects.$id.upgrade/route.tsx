@@ -2,13 +2,66 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
-import { Check, Sparkles, Zap, Crown } from "lucide-react"
+import { Check } from "lucide-react"
 import { ParticlesBackground } from "@/components/particles-background"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { plans } from "~/constants/subscriptions"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { getUserProjects } from "~/utils/apis"
+import { useParams } from "react-router"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
+import { toast } from "sonner"
+import { getAuth } from "firebase/auth"
+import axios from "axios"
+import { API_BASE_URL } from "~/constants"
 
 export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<(typeof plans)[0] | null>(
+    null
+  )
+
+  const { data: projects } = useQuery({
+    queryFn: getUserProjects,
+    queryKey: ["user-projects"],
+  })
+
+  const params = useParams()
+
+  const { isPending, mutateAsync } = useMutation({
+    mutationKey: ["update-project", params.id],
+    mutationFn: async () => {
+      const token = await getAuth().currentUser?.getIdToken()
+
+      return axios.post(
+        `${API_BASE_URL}/api/projects/upgrade-project`,
+        { planId: selectedPlan?.id, projectId: Number(params.id) },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+    },
+  })
+
+  const focusedProject = useMemo(
+    () => projects?.find((item) => item.id == params["id"]),
+    [projects, params]
+  )
+
+  const sub = plans.find((item) => focusedProject?.selectedPlanId === item.id)!
 
   return (
     <section className="w-full overflow-hidden py-5">
@@ -16,7 +69,7 @@ export default function PricingSection() {
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="text-center mb-16 space-y-6">
           <h1 className="text-4xl md:text-6xl font-bold text-balance bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Pricing
+            Upgrade
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground mx-auto text-balance">
             {
@@ -135,14 +188,22 @@ export default function PricingSection() {
                 </div>
 
                 <Button
+                  onClick={() => {
+                    if (plan.id === sub?.id) return
+                    setSelectedPlan(plan)
+                    setShowConfirm(true)
+                  }}
+                  disabled={plan.id === sub?.id || isPending}
                   className={`w-full mt-8 transition-all duration-300 group-hover:shadow-lg ${
-                    plan.popular
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]"
-                      : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+                    plan.id === sub?.id
+                      ? "bg-muted text-muted-foreground cursor-not-allowed"
+                      : plan.popular
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]"
+                        : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
                   }`}
                   size="lg"
                 >
-                  {plan.cta}
+                  {plan.id === sub?.id ? "Current Plan" : plan.cta}
                 </Button>
 
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -183,6 +244,43 @@ export default function PricingSection() {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Upgrade to {selectedPlan?.name}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              You are about to upgrade to the{" "}
+              <strong>{selectedPlan?.name}</strong> plan at $
+              {isYearly
+                ? selectedPlan?.yearlyPrice
+                : selectedPlan?.monthlyPrice}
+              /{isYearly ? "year" : "month"}.
+              {isYearly &&
+                (selectedPlan?.monthlyPrice ?? 0) > 0 &&
+                ` (Save ${((((selectedPlan?.monthlyPrice ?? 0) - (selectedPlan?.yearlyPrice ?? 0)) / (selectedPlan?.monthlyPrice ?? 1)) * 100).toFixed(0)}%)`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                mutateAsync().then(() => {
+                  setShowConfirm(false)
+
+                  toast("Thank you!", {
+                    description: `Thank you for your interest in ${selectedPlan?.name} tier! Our sales team has been notified and will email you shortly.`,
+                  })
+                })
+              }}
+            >
+              Confirm Upgrade
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   )
 }

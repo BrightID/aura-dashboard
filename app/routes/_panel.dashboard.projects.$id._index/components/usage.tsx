@@ -1,5 +1,6 @@
 import { Shield } from "lucide-react"
 import type { Project } from "~/components/projects-table"
+import { Button } from "~/components/ui/button"
 import {
   Card,
   CardHeader,
@@ -9,8 +10,11 @@ import {
 } from "~/components/ui/card"
 import { Progress } from "~/components/ui/progress"
 import { Separator } from "~/components/ui/separator"
+import { plans } from "~/constants/subscriptions"
 
 export default function ProjectUsage({ project }: { project: Project }) {
+  const sub = plans.find((item) => project.selectedPlanId === item.id)!
+
   return (
     <div className="space-y-6">
       <Card>
@@ -27,11 +31,15 @@ export default function ProjectUsage({ project }: { project: Project }) {
                 Remaining Tokens
               </span>
               <span className="text-sm font-medium">
-                {project.remainingtokens.toLocaleString()} / 10,000
+                {project.remainingtokens.toLocaleString()} /{" "}
+                {sub.tokens.toLocaleString()}
               </span>
             </div>
             <Progress
-              value={Math.min((project.remainingtokens / 10000) * 100, 100)}
+              value={Math.min(
+                (project.remainingtokens / sub.tokens) * 100,
+                100
+              )}
               className="h-3"
             />
           </div>
@@ -47,13 +55,13 @@ export default function ProjectUsage({ project }: { project: Project }) {
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <p className="text-3xl font-semibold">
-                {(10000 - project.remainingtokens).toLocaleString()}
+                {(sub.tokens - project.remainingtokens).toLocaleString()}
               </p>
               <p className="text-sm text-muted-foreground mt-1">Used</p>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <p className="text-3xl font-semibold">
-                {((project.remainingtokens / 10000) * 100).toFixed(1)}%
+                {((project.remainingtokens / sub.tokens) * 100).toFixed(1)}%
               </p>
               <p className="text-sm text-muted-foreground mt-1">Available</p>
             </div>
@@ -82,6 +90,10 @@ export default function ProjectUsage({ project }: { project: Project }) {
               <p className="text-sm text-muted-foreground">
                 Verification requirement threshold
               </p>
+            </div>
+
+            <div className="ml-auto">
+              <Button variant={"secondary"}>Configure</Button>
             </div>
           </div>
         </CardContent>

@@ -9,8 +9,12 @@ import {
 } from "~/components/ui/card"
 import type { Project } from "~/components/projects-table"
 import { Button } from "~/components/ui/button"
+import { plans } from "~/constants/subscriptions"
+import { Link } from "react-router"
 
 export default function ProjectBilling({ project }: { project: Project }) {
+  const sub = plans.find((item) => project.selectedPlanId === item.id)!
+
   return (
     <div className="space-y-6">
       <Card>
@@ -28,9 +32,7 @@ export default function ProjectBilling({ project }: { project: Project }) {
               </div>
               <div>
                 <p className="font-semibold">
-                  {project.selectedPlanId
-                    ? `Plan #${project.selectedPlanId}`
-                    : "No Plan Selected"}
+                  {sub ? `Plan #${sub.name}` : "No Plan Selected"}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {project.selectedPlanId
@@ -39,8 +41,10 @@ export default function ProjectBilling({ project }: { project: Project }) {
                 </p>
               </div>
             </div>
-            <Button variant="outline">
-              {project.selectedPlanId ? "Change Plan" : "Select Plan"}
+            <Button asChild>
+              <Link to={`/dashboard/projects/${project.id}/upgrade`}>
+                Upgrade
+              </Link>
             </Button>
           </div>
         </CardContent>

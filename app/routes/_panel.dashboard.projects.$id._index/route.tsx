@@ -2,19 +2,12 @@ import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { useParams } from "react-router"
 import { getUserProjects } from "~/utils/apis"
-import {
-  ProjectDetailPanel,
-  ProjectDetailSkeleton,
-} from "./components/project-details"
+import { ProjectDetailSkeleton } from "./components/project-details"
 import { ProjectTabs } from "./components/project-tabs"
 import { ProjectHeader } from "./components/project-header"
 
 export default function ProjectDetail() {
-  const {
-    data: projects,
-    error,
-    isLoading,
-  } = useQuery({
+  const { data: projects } = useQuery({
     queryFn: getUserProjects,
     queryKey: ["user-projects"],
   })

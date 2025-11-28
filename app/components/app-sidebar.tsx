@@ -15,7 +15,6 @@ import {
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "~/lib/firebase"
 import { Link } from "react-router"
-import { IconInnerShadowTop } from "@tabler/icons-react"
 import { dashboardLinks } from "~/constants/dashboard-links"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -30,7 +29,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link to="/dashboard">
+              <Link to="/">
                 <img src="/favicon.ico" width={30} height={30} alt="aura" />
                 <span className="text-base font-semibold">Aura Dashboard</span>
               </Link>
