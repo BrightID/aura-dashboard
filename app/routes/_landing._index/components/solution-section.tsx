@@ -39,12 +39,12 @@ export function SolutionSection() {
             <div className="relative">
               {/* Central Aura node */}
               <div className="relative w-64 h-64 mx-auto">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 animate-pulse" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-orange/30 animate-pulse" />
                 <div
-                  className="absolute inset-4 rounded-full bg-gradient-to-br from-primary/50 to-accent/50 animate-pulse"
+                  className="absolute inset-4 rounded-full bg-gradient-to-br from-primary/50 to-orange/50 animate-pulse"
                   style={{ animationDelay: "0.5s" }}
                 />
-                <div className="absolute inset-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                <div className="absolute inset-8 rounded-full bg-gradient-to-br from-primary to-orange flex items-center justify-center">
                   <div className="text-center">
                     <Sparkles className="w-12 h-12 text-primary-foreground mx-auto mb-2" />
                     <span className="text-primary-foreground font-bold text-lg">

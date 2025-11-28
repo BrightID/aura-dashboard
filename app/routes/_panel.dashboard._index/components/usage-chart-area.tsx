@@ -78,6 +78,7 @@ export function ProjectUsageChart({ projectId }: { projectId: string }) {
             value={timeRange}
             onValueChange={setTimeRange}
             className="hidden @[767px]:flex"
+            variant={"outline"}
           >
             <ToggleGroupItem value="90d">3 months</ToggleGroupItem>
             <ToggleGroupItem value="30d">30 days</ToggleGroupItem>
