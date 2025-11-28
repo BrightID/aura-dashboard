@@ -2,7 +2,12 @@ import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { useParams } from "react-router"
 import { getUserProjects } from "~/utils/apis"
-import { ProjectDetailPanel } from "./components/project-details"
+import {
+  ProjectDetailPanel,
+  ProjectDetailSkeleton,
+} from "./components/project-details"
+import { ProjectTabs } from "./components/project-tabs"
+import { ProjectHeader } from "./components/project-header"
 
 export default function ProjectDetail() {
   const {
@@ -21,11 +26,14 @@ export default function ProjectDetail() {
     [projects, params]
   )
 
-  if (!focusedProject) return null
+  if (!focusedProject) return <ProjectDetailSkeleton />
 
   return (
     <div>
-      <ProjectDetailPanel onClose={() => {}} project={focusedProject} />
+      <ProjectHeader project={focusedProject} />
+      <div className="max-w-6xl mx-auto px-6 py-6">
+        <ProjectTabs project={focusedProject} />
+      </div>
     </div>
   )
 }
