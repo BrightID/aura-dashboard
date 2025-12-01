@@ -181,6 +181,7 @@ function LoginScreen() {
         <div className="space-y-3">
           <Button
             variant="outline"
+            type="button"
             onClick={loginWithGoogle}
             className="w-full glass-effect border-white/30 hover-lift ripple-effect text-card-foreground hover:bg-white/20 font-sans transition-all duration-300"
           >
@@ -189,6 +190,7 @@ function LoginScreen() {
           </Button>
 
           <Button
+            type="button"
             variant="outline"
             onClick={loginWithApple}
             className="w-full glass-effect border-white/30 hover-lift ripple-effect text-card-foreground hover:bg-white/20 font-sans transition-all duration-300"
