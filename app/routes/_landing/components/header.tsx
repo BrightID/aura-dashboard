@@ -62,9 +62,7 @@ export function Header() {
               className="bg-primary text-primary-foreground hover:bg-primary/90"
               asChild
             >
-              <Link to="https://aura.brightid.org" target="_blank">
-                Get Started
-              </Link>
+              <Link to="/login">Get Started</Link>
             </Button>
           </div>
 

@@ -94,9 +94,9 @@ export function SolutionSection() {
               },
               {
                 icon: CheckCircle2,
-                title: "Seamless Experience",
+                title: "Human-Backed Trust",
                 description:
-                  "Users don't need to solve puzzles or share personal data. Most people can get verified through Aura Verified with simple instructions.",
+                  "Verification requires someone who knows you to vouch for your unique identity. This human connection is what makes Aura resistant to bots.",
               },
             ].map((feature, index) => (
               <div
