@@ -5,6 +5,7 @@ import { HowItWorksSection } from "./components/how-it-works-section"
 import { FeaturesSection } from "./components/features-section"
 import { BusinessSection } from "./components/business-section"
 import { CTASection } from "./components/cta-section"
+import { ComparisonSection } from "./components/comparison-section"
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <SolutionSection />
       <HowItWorksSection />
       <FeaturesSection />
+      <ComparisonSection />
       <BusinessSection />
       <CTASection />
     </main>

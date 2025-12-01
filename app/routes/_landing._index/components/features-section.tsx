@@ -5,9 +5,9 @@ import { Shield, Users, Zap, RefreshCw, Globe, Award } from "lucide-react"
 const features = [
   {
     icon: Shield,
-    title: "Sybil Battleground",
+    title: "Expert Defense Network",
     description:
-      "Aura hosts the best motivated, best equipped, and most capable sybil defenders. Attackers face elite players, trainers, and managers instead of casual users.",
+      "Aura's verification is handled by motivated experts who actively protect the network. Bots and fake accounts face trained defenders, not casual users.",
     color: "text-primary",
     bgColor: "bg-primary/10",
   },
