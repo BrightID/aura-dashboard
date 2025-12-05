@@ -64,14 +64,14 @@ export default function PricingSection() {
   const sub = plans.find((item) => focusedProject?.selectedPlanId === item.id)!
 
   return (
-    <section className="w-full overflow-hidden py-5">
+    <section className="w-full overflow-hidden py-3">
       <ParticlesBackground />
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="text-center mb-16 space-y-6">
-          <h1 className="text-4xl md:text-6xl font-bold text-balance bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+      <div className="relative z-10 mx-auto max-w-5xl">
+        <div className="text-center mb-8 space-y-10">
+          <h1 className="text-4xl font-bold text-balance bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
             Upgrade
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mx-auto text-balance">
+          <p className="text-sm md:text-base text-muted-foreground mx-auto text-balance">
             {
               "Start building for free. Scale as you grow with flexible pricing designed for teams of all sizes."
             }
@@ -98,7 +98,7 @@ export default function PricingSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           {plans.map((plan, index) => {
             const Icon = plan.icon
             const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice
@@ -114,11 +114,11 @@ export default function PricingSection() {
             return (
               <Card
                 key={plan.name}
-                className={`group relative p-8 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
+                className={`group relative p-4 flex flex-col backdrop-blur-sm transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
                   plan.popular
                     ? "border-primary/50 shadow-[0_0_40px_rgba(99,102,241,0.2)] bg-card/60 hover:shadow-[0_0_60px_rgba(99,102,241,0.3)]"
                     : "border-border/50 bg-card/40 hover:bg-card/60 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.15)]"
-                } ${index === 1 ? "lg:scale-105" : ""}`}
+                } `}
                 style={{
                   animationDelay: `${index * 100}ms`,
                 }}
@@ -212,7 +212,7 @@ export default function PricingSection() {
           })}
         </div>
 
-        <div className="mt-24 text-center space-y-6">
+        <div className="mt-10 text-center space-y-6">
           <div className="inline-block p-6 rounded-lg bg-card/40 backdrop-blur-sm border border-border/50">
             <p className="text-muted-foreground">
               {"Need a custom plan? "}
