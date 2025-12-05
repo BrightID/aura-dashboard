@@ -1,8 +1,8 @@
 import { ArrowLeft, Globe, ExternalLink, Settings } from "lucide-react"
 import { useNavigate } from "react-router"
-import type { Project } from "~/components/projects-table"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import type { Project } from "~/types/projects"
 
 export function ProjectHeader({ project }: { project: Project }) {
   const navigate = useNavigate()

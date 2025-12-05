@@ -21,24 +21,7 @@ import { ArrowUpDown, Edit2, Eye, Plus } from "lucide-react"
 import { Link } from "react-router"
 import { useProjectStore } from "~/store/project-store"
 import { format } from "date-fns"
-
-export type Project = {
-  id: string
-  name: string
-  description: string
-  requirementLevel: number | null
-  websiteUrl?: string
-  image?: string
-  landingMarkdown?: string
-  remainingtokens: number
-  brightIdAppId: string
-  deadline: string | null
-  isActive: boolean
-  logoUrl?: string | null
-  selectedPlanId?: number | null
-  createdAt: string
-  updatedAt?: string
-}
+import type { Project } from "~/types/projects"
 
 const columns: ColumnDef<Project>[] = [
   {

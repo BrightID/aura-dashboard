@@ -7,10 +7,10 @@ import {
   CardDescription,
   CardContent,
 } from "~/components/ui/card"
-import type { Project } from "~/components/projects-table"
 import { Button } from "~/components/ui/button"
 import { plans } from "~/constants/subscriptions"
 import { Link } from "react-router"
+import type { Project } from "~/types/projects"
 
 export default function ProjectBilling({ project }: { project: Project }) {
   const sub = plans.find((item) => project.selectedPlanId === item.id)!

@@ -1,11 +1,20 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
-import { BarChart3, Zap, CreditCard, Settings, Activity } from "lucide-react"
-import type { Project } from "~/components/projects-table"
+import {
+  BarChart3,
+  Zap,
+  CreditCard,
+  Settings,
+  Activity,
+  SunDim,
+  SunDimIcon,
+  View,
+} from "lucide-react"
 import OverviewSection from "./overview"
 import ProjectUsage from "./usage"
 import ProjectBilling from "./billing"
 import { SettingsTab } from "./settings"
-import ProjectActivity from "./activity"
+import { BrightIdSettingsForm } from "./brightid-settings"
+import type { Project } from "~/types/projects"
 
 export function ProjectTabs({ project }: { project: Project }) {
   return (
@@ -23,8 +32,11 @@ export function ProjectTabs({ project }: { project: Project }) {
         <TabsTrigger value="settings" className="flex items-center gap-2">
           <Settings className="h-4 w-4" /> Settings
         </TabsTrigger>
-        <TabsTrigger value="activity" className="flex items-center gap-2">
-          <Activity className="h-4 w-4" /> Activity
+        <TabsTrigger value="brightid" className="flex items-center gap-2">
+          <SunDimIcon className="h-5 w-5" /> Bright ID
+        </TabsTrigger>
+        <TabsTrigger value="preview" className="flex items-center gap-2">
+          <View className="h-4 w-4" /> Preview
         </TabsTrigger>
       </TabsList>
 
@@ -40,8 +52,8 @@ export function ProjectTabs({ project }: { project: Project }) {
       <TabsContent value="settings">
         <SettingsTab project={project} />
       </TabsContent>
-      <TabsContent value="activity">
-        <ProjectActivity project={project} />
+      <TabsContent value="brightid">
+        <BrightIdSettingsForm initialData={project.brightIdApp as never} />
       </TabsContent>
     </Tabs>
   )

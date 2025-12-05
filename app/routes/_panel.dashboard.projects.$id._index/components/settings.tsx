@@ -1,5 +1,3 @@
-"use client"
-
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -23,12 +21,12 @@ import {
   FormMessage,
 } from "~/components/ui/form"
 import { ImageIcon, Upload } from "lucide-react"
-import type { Project } from "~/components/projects-table"
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
 import { API_BASE_URL } from "~/constants"
 import _ from "lodash"
 import { getAuth } from "firebase/auth"
+import type { Project } from "~/types/projects"
 
 const formSchema = z.object({
   name: z.string().min(1, "Project name is required"),

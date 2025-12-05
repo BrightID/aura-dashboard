@@ -1,5 +1,4 @@
 import { Shield } from "lucide-react"
-import type { Project } from "~/components/projects-table"
 import { Button } from "~/components/ui/button"
 import {
   Card,
@@ -11,6 +10,7 @@ import {
 import { Progress } from "~/components/ui/progress"
 import { Separator } from "~/components/ui/separator"
 import { plans } from "~/constants/subscriptions"
+import type { Project } from "~/types/projects"
 
 export default function ProjectUsage({ project }: { project: Project }) {
   const sub = plans.find((item) => project.selectedPlanId === item.id)!

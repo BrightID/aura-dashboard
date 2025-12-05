@@ -4,7 +4,6 @@ import {
   formatDistanceToNowStrict,
 } from "date-fns"
 import { Clock, Activity, Calendar } from "lucide-react"
-import type { Project } from "~/components/projects-table"
 import {
   Card,
   CardHeader,
@@ -13,6 +12,7 @@ import {
   CardContent,
 } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import type { Project } from "~/types/projects"
 
 export default function ProjectActivity({ project }: { project: Project }) {
   return (

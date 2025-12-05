@@ -1,6 +1,5 @@
 import { format } from "date-fns"
 import { ImageIcon, Calendar, CreditCard, FileText, Hash } from "lucide-react"
-import type { Project } from "~/components/projects-table"
 import {
   Card,
   CardHeader,
@@ -9,6 +8,7 @@ import {
   CardDescription,
 } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import type { Project } from "~/types/projects"
 
 export default function OverviewSection({ project }: { project: Project }) {
   return (

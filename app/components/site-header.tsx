@@ -4,7 +4,7 @@ import { Separator } from "~/components/ui/separator"
 import { SidebarTrigger } from "~/components/ui/sidebar"
 import { useTheme } from "~/components/theme-provider"
 import { logUserOut } from "~/lib/auth-actions"
-import { useNavigate, useLocation } from "react-router"
+import { useNavigate, useLocation, Link } from "react-router"
 import { IconBrandGithub } from "@tabler/icons-react"
 import { useMemo } from "react"
 import { dashboardLinks } from "~/constants/dashboard-links"
@@ -35,11 +35,18 @@ export function SiteHeader() {
           {activeLink?.title || "Dashboard"}
         </h1>
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" size="sm">
-            <Book size={40} />
+          <Button asChild variant="ghost" size="sm">
+            <Link to={"http://brightid.gitbook.io/aura/"} target="_blank">
+              <Book size={40} />
+            </Link>
           </Button>
-          <Button variant="ghost" size="sm">
-            <IconBrandGithub size={40} />
+          <Button asChild variant="ghost" size="sm">
+            <Link
+              to={"https://github.com/BrightID/aura-verified"}
+              target="_blank"
+            >
+              <IconBrandGithub size={40} />
+            </Link>
           </Button>
           <Button
             variant="ghost"

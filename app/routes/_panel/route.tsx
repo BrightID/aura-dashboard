@@ -2,6 +2,7 @@ import { Outlet } from "react-router"
 import { AppSidebar } from "~/components/app-sidebar"
 import { SiteHeader } from "~/components/site-header"
 import { SidebarProvider, SidebarInset } from "~/components/ui/sidebar"
+import { RequireAuth } from "../_components/require-auth"
 
 export default function PanelLayout() {
   return (
@@ -22,6 +23,7 @@ export default function PanelLayout() {
           </div>
         </div>
       </SidebarInset>
+      <RequireAuth />
     </SidebarProvider>
   )
 }
