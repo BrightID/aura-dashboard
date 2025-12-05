@@ -2,9 +2,9 @@
 
 import { useRef } from "react"
 import { useInView } from "@/hooks/use-in-view"
-import { Check, X, Minus } from "lucide-react"
+import { Check, X, Minus, HelpCircle } from "lucide-react"
 
-type ComparisonValue = "yes" | "no" | "partial"
+type ComparisonValue = "yes" | "no" | "partial" | "unknown"
 
 interface ComparisonRow {
   feature: string
@@ -26,7 +26,7 @@ const comparisonData: ComparisonRow[] = [
     feature: "Prevents duplicate accounts",
     aura: "yes",
     captcha: "no",
-    governmentId: "yes",
+    governmentId: "unknown",
     phoneVerification: "partial",
   },
   {
@@ -58,7 +58,7 @@ const comparisonData: ComparisonRow[] = [
     phoneVerification: "partial",
   },
   {
-    feature: "Resistant to AI/ML bypass",
+    feature: "Resistant to deepfakes",
     aura: "yes",
     captcha: "no",
     governmentId: "partial",
@@ -67,30 +67,35 @@ const comparisonData: ComparisonRow[] = [
   {
     feature: "Verifiable on-chain",
     aura: "yes",
-    captcha: "no",
-    governmentId: "no",
-    phoneVerification: "no",
+    captcha: "partial",
+    governmentId: "partial",
+    phoneVerification: "partial",
   },
 ]
 
 function ComparisonIcon({ value }: { value: ComparisonValue }) {
-  if (value === "yes") {
+  if (value === "yes")
     return (
       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
         <Check className="w-5 h-5 text-primary" />
       </div>
     )
-  }
-  if (value === "no") {
+  if (value === "no")
     return (
       <div className="w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center">
         <X className="w-5 h-5 text-destructive" />
       </div>
     )
-  }
+  if (value === "partial")
+    return (
+      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+        <Minus className="w-5 h-5 text-muted-foreground" />
+      </div>
+    )
+  // unknown
   return (
-    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-      <Minus className="w-5 h-5 text-muted-foreground" />
+    <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+      <HelpCircle className="w-5 h-5 text-amber-600" />
     </div>
   )
 }
@@ -106,6 +111,7 @@ export function ComparisonSection() {
       className="py-24 lg:py-32 relative overflow-hidden bg-secondary/30"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div
           className={`text-center mb-16 transition-all duration-700 ${isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
@@ -117,8 +123,6 @@ export function ComparisonSection() {
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             See how Aura compares to traditional identity verification methods.
-            Each approach has trade-offs, but Aura offers a unique combination
-            of privacy, security, and decentralization.
           </p>
         </div>
 
@@ -143,7 +147,7 @@ export function ComparisonSection() {
               <div className="p-6 text-center font-semibold text-muted-foreground border-r border-border">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-sm">🤖</span>
+                    Bot
                   </div>
                   Captcha
                 </div>
@@ -151,7 +155,7 @@ export function ComparisonSection() {
               <div className="p-6 text-center font-semibold text-muted-foreground border-r border-border">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-sm">🪪</span>
+                    ID
                   </div>
                   Government ID
                 </div>
@@ -159,7 +163,7 @@ export function ComparisonSection() {
               <div className="p-6 text-center font-semibold text-muted-foreground">
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-sm">📱</span>
+                    Phone
                   </div>
                   Phone Verification
                 </div>
@@ -192,15 +196,12 @@ export function ComparisonSection() {
           </div>
         </div>
 
+        {/* Mobile Cards */}
         <div className="lg:hidden space-y-4">
           {comparisonData.map((row, index) => (
             <div
               key={row.feature}
-              className={`rounded-xl border border-border bg-card p-5 transition-all duration-500 ${
-                isInView
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
+              className={`rounded-xl border border-border bg-card p-5 transition-all duration-500 ${isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
               style={{ transitionDelay: `${index * 50}ms` }}
             >
               <h3 className="font-semibold text-foreground mb-4">
@@ -228,6 +229,7 @@ export function ComparisonSection() {
           ))}
         </div>
 
+        {/* Legend */}
         <div
           className={`flex flex-wrap justify-center gap-6 mt-8 transition-all duration-700 delay-500 ${isInView ? "opacity-100" : "opacity-0"}`}
         >
@@ -244,6 +246,12 @@ export function ComparisonSection() {
           <div className="flex items-center gap-2">
             <ComparisonIcon value="no" />
             <span className="text-sm text-muted-foreground">Not Supported</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ComparisonIcon value="unknown" />
+            <span className="text-sm text-amber-600">
+              Uncertain / Depends on Implementation
+            </span>
           </div>
         </div>
       </div>

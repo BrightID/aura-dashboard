@@ -31,12 +31,6 @@ const useCases = [
       "Trust scores help moderate platforms by giving verified humans more weight than potential bots.",
     icon: ShieldCheck,
   },
-  {
-    title: "Regulatory Compliance",
-    description:
-      "Meet KYC-adjacent requirements while respecting user privacy through expert evaluations.",
-    icon: TrendingUp,
-  },
 ]
 
 const stats = [

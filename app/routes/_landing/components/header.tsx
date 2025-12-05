@@ -2,6 +2,12 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { Link } from "react-router"
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover"
+import { ChevronDown, Shield, Users, LayoutDashboard } from "lucide-react"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -50,6 +56,59 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium flex items-center gap-1">
+                  Products
+                  <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-2 mt-2" align="start">
+                <div className="grid gap-1">
+                  <Link
+                    to="https://aura-get-verified.vercel.app"
+                    target="_blank"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Shield className="w-5 h-5 text-primary" />
+                    <div>
+                      <div className="font-medium">Aura Verified</div>
+                      <div className="text-xs text-muted-foreground">
+                        Human uniqueness verification
+                      </div>
+                    </div>
+                  </Link>
+                  <Link
+                    to="https://aura.brightid.org"
+                    target="_blank"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Users className="w-5 h-5 text-primary" />
+                    <div>
+                      <div className="font-medium">Aura Players</div>
+                      <div className="text-xs text-muted-foreground">
+                        Community & reputation hub
+                      </div>
+                    </div>
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <LayoutDashboard className="w-5 h-5 text-primary" />
+                    <div>
+                      <div className="font-medium">Dashboard</div>
+                      <div className="text-xs text-muted-foreground">
+                        Integrate with aura
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </PopoverContent>
+            </Popover>
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
