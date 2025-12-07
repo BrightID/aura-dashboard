@@ -6,6 +6,7 @@ import { FeaturesSection } from "./components/features-section"
 import { BusinessSection } from "./components/business-section"
 import { CTASection } from "./components/cta-section"
 import { ComparisonSection } from "./components/comparison-section"
+import { ScrollAnimation } from "./components/bot-scroll-animation"
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <HowItWorksSection />
       <FeaturesSection />
       <ComparisonSection />
+      <ScrollAnimation />
       <BusinessSection />
       <CTASection />
     </main>

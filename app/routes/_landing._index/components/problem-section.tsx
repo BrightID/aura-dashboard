@@ -5,13 +5,13 @@ import { Bot, ShieldX, Wallet, Zap } from "lucide-react"
 const problems = [
   {
     icon: Bot,
-    title: "Mass Account Creation",
+    title: "Degraded UX",
     description:
       "Bots register thousands of accounts instantly to exploit airdrops, bonuses, or farming rewards.",
   },
   {
     icon: ShieldX,
-    title: "Sybil Attacks & Farming",
+    title: "Fake Crowd Trick & Reward Cheating",
     description:
       "One person controls 10,000 wallets. Your token distribution, voting, or rewards become meaningless.",
   },
@@ -45,9 +45,9 @@ export function ProblemSection() {
         <div
           className={`text-center mb-16 transition-all duration-700 ${isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
-          <span className="text-destructive font-medium text-sm uppercase tracking-wider">
+          {/* <span className="text-destructive font-medium text-sm uppercase tracking-wider">
             Bot Problem?
-          </span>
+          </span> */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-6 text-balance">
             Do You Have a Bot Problem?
           </h2>
