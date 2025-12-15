@@ -208,25 +208,6 @@ export function ScrollAnimation() {
             ))}
           </motion.div>
         </motion.div>
-
-        <motion.div
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-        >
-          <div className="flex items-center gap-3 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-full border border-border">
-            <span className="text-xs text-muted-foreground font-mono">
-              Bot invasion progress
-            </span>
-            <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-primary rounded-full"
-                style={{ scaleX: scrollYProgress, transformOrigin: "left" }}
-              />
-            </div>
-          </div>
-        </motion.div>
       </div>
     </div>
   )
