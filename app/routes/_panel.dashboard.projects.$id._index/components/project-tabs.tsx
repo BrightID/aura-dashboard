@@ -15,6 +15,7 @@ import ProjectBilling from "./billing"
 import { SettingsTab } from "./settings"
 import { BrightIdSettingsForm } from "./brightid-settings"
 import type { Project } from "~/types/projects"
+import PreviewTab from "./preview-tab"
 
 export function ProjectTabs({ project }: { project: Project }) {
   return (
@@ -54,6 +55,9 @@ export function ProjectTabs({ project }: { project: Project }) {
       </TabsContent>
       <TabsContent value="brightid">
         <BrightIdSettingsForm initialData={project.brightIdApp as never} />
+      </TabsContent>
+      <TabsContent value="preview">
+        <PreviewTab project={project} />
       </TabsContent>
     </Tabs>
   )

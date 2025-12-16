@@ -15,7 +15,7 @@ export function ProjectDetailSkeleton() {
           </div>
         </div>
       </header>
-      <div className="max-w-6xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         <Skeleton className="h-10 w-96 mb-6" />
         <div className="grid gap-6 md:grid-cols-3">
           <Skeleton className="h-32" />
