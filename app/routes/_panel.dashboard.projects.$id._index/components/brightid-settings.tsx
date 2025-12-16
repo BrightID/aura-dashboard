@@ -163,23 +163,6 @@ export function BrightIdSettingsForm({
           <CardContent className="space-y-6">
             <FormField
               control={form.control}
-              name="sponsoring"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <FormLabel>Sponsoring</FormLabel>
-                    <FormDescription>
-                      App pays for user connections (always enabled)
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch checked={field.value} disabled />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="testing"
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between">

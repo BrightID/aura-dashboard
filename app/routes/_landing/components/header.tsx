@@ -59,11 +59,11 @@ export function Header() {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium flex items-center gap-1">
-                  Products
+                  Use Aura
                   <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-56 p-2 mt-2" align="start">
+              <PopoverContent className="w-72 p-2 mt-2" align="center">
                 <div className="grid gap-1">
                   <Link
                     to="https://aura-get-verified.vercel.app"

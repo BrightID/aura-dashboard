@@ -80,22 +80,17 @@ function ComparisonIcon({ value }: { value: ComparisonValue }) {
         <Check className="w-5 h-5 text-primary" />
       </div>
     )
+
   if (value === "no")
     return (
       <div className="w-8 h-8 rounded-full bg-destructive/20 flex items-center justify-center">
         <X className="w-5 h-5 text-destructive" />
       </div>
     )
-  if (value === "partial")
-    return (
-      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-        <Minus className="w-5 h-5 text-muted-foreground" />
-      </div>
-    )
-  // unknown
+
   return (
-    <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
-      <HelpCircle className="w-5 h-5 text-amber-600" />
+    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+      <HelpCircle className="w-5 h-5 text-yellow-600" />
     </div>
   )
 }
@@ -236,12 +231,6 @@ export function ComparisonSection() {
           <div className="flex items-center gap-2">
             <ComparisonIcon value="yes" />
             <span className="text-sm text-muted-foreground">Supported</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ComparisonIcon value="partial" />
-            <span className="text-sm text-muted-foreground">
-              Partial/Limited
-            </span>
           </div>
           <div className="flex items-center gap-2">
             <ComparisonIcon value="no" />

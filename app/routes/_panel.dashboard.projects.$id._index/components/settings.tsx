@@ -241,7 +241,7 @@ export function SettingsTab({ project }: { project: Project }) {
                   <FormLabel>BrightID App ID</FormLabel>
                   <FormControl>
                     <div className="flex gap-2">
-                      <Input {...field} className="font-mono" />
+                      <Input readOnly {...field} className="font-mono" />
                       <Button type="button" variant="outline" size="sm">
                         Copy
                       </Button>

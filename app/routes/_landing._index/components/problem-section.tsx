@@ -5,27 +5,47 @@ import { Bot, ShieldX, Wallet, Zap } from "lucide-react"
 const problems = [
   {
     icon: Bot,
-    title: "Degraded UX",
+    title: "Bot Takeovers & Degraded UX",
     description:
       "Bots register thousands of accounts instantly to exploit airdrops, bonuses, or farming rewards.",
   },
   {
     icon: ShieldX,
-    title: "Fake Crowd Trick & Reward Cheating",
+    title: "User Drop-Off from Friction",
     description:
-      "One person controls 10,000 wallets. Your token distribution, voting, or rewards become meaningless.",
+      "CAPTCHAs, KYC flows, and manual reviews frustrate real users, while sophisticated attackers still get through.",
   },
   {
     icon: Wallet,
-    title: "Wallet Drainers & Phishing",
-    description:
-      "Fake users trick your community or bypass KYC to push malicious transactions.",
+    title: "KYC & AML Stop Very Little Fraud",
+    description: (
+      <>
+        Traditional KYC and AML systems fail to stop large-scale abuse.{" "}
+        <a
+          href="https://www.gisreportsonline.com/r/why-anti-money-laundering-policies-are-failing/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-destructive underline hover:opacity-80"
+        >
+          Read analysis
+        </a>{" "}
+        ·{" "}
+        <a
+          href="https://disruptive-horizons.com/p/kyc-aml-destroying-world"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-destructive underline hover:opacity-80"
+        >
+          Research breakdown
+        </a>
+      </>
+    ),
   },
   {
     icon: Zap,
-    title: "Sniping & MEV Bots",
+    title: "Privacy Risks & Data Leaks",
     description:
-      "Bots front-run launches, mints, and trades, leaving real users with nothing.",
+      "Many bot-prevention solutions collect sensitive user data, creating centralized honeypots that attract attackers and increase the impact of breaches.",
   },
 ]
 

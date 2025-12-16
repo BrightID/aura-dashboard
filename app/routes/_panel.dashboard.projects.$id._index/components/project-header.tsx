@@ -1,4 +1,10 @@
-import { ArrowLeft, Globe, ExternalLink, Settings } from "lucide-react"
+import {
+  ArrowLeft,
+  Globe,
+  ExternalLink,
+  Settings,
+  AppWindowIcon,
+} from "lucide-react"
 import { useNavigate } from "react-router"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
@@ -66,12 +72,24 @@ export function ProjectHeader({ project }: { project: Project }) {
             {project.websiteUrl && (
               <Button variant="outline" asChild>
                 <a
+                  href={`https://aura-get-verified.vercel.app/${project.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <AppWindowIcon className="mr-2 h-4 w-4" />
+                  Your page
+                </a>
+              </Button>
+            )}
+            {project.websiteUrl && (
+              <Button variant="outline" asChild>
+                <a
                   href={project.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
-                  Visit Site
+                  Website
                 </a>
               </Button>
             )}
