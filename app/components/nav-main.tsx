@@ -1,7 +1,6 @@
 import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
-import { Link } from "react-router"
+import { NavLink, useLocation } from "react-router"
 
-import { Button } from "~/components/ui/button"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -19,39 +18,43 @@ export function NavMain({
     icon?: Icon
   }[]
 }) {
+  const { pathname } = useLocation()
   return (
     <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
+      <SidebarGroupContent className="flex flex-col gap-4 p-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               tooltip="Quick Create"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear rounded-md shadow-sm"
               asChild
             >
-              <Link to="/dashboard/projects/new">
-                <IconCirclePlusFilled />
-                <span>Quick Create</span>
-              </Link>
+              <NavLink to="/dashboard/projects/new">
+                <IconCirclePlusFilled className="h-5 w-5" />
+                <span className="font-medium">Quick Create</span>
+              </NavLink>
             </SidebarMenuButton>
-            {/* <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconMail />
-              <span className="sr-only">Inbox</span>
-            </Button> */}
           </SidebarMenuItem>
         </SidebarMenu>
-        <SidebarMenu>
+        <SidebarMenu className="border-t pt-2">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <Link to={item.url}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </Link>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                className="hover:bg-accent/80 rounded-md"
+              >
+                <NavLink
+                  to={item.url}
+                  className={
+                    pathname === item.url
+                      ? "bg-secondary text-accent-foreground"
+                      : ""
+                  }
+                >
+                  {item.icon && <item.icon className="h-5 w-5" />}
+                  <span className="font-medium">{item.title}</span>
+                </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

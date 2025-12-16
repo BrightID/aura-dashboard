@@ -87,13 +87,11 @@ export default function ProjectUsage({ project }: { project: Project }) {
           </div>
         </CardContent>
       </Card>
-
-      <UserRequiredLevelCard project={project} />
     </div>
   )
 }
 
-function UserRequiredLevelCard({ project }: { project: Project }) {
+export function UserRequiredLevelCard({ project }: { project: Project }) {
   const [selectedLevel, setSelectedLevel] = useState<string>(
     project.requirementLevel?.toString() ?? ""
   )

@@ -72,7 +72,7 @@ export function ProjectHeader({ project }: { project: Project }) {
             {project.websiteUrl && (
               <Button variant="outline" asChild>
                 <a
-                  href={`https://aura-get-verified.vercel.app/${project.id}`}
+                  href={`https://aura-get-verified.vercel.app/projects/${project.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

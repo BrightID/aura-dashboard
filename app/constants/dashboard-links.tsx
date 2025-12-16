@@ -88,11 +88,11 @@ export const dashboardLinks = {
     },
   ],
   navSecondary: [
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: IconSettings,
-    },
+    // {
+    //   title: "Settings",
+    //   url: "/settings",
+    //   icon: IconSettings,
+    // },
     {
       title: "Get Help",
       url: "https://discord.gg/pcWy6NqM",

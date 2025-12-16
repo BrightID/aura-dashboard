@@ -24,17 +24,14 @@ export function ProjectTabs({ project }: { project: Project }) {
         <TabsTrigger value="overview" className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4" /> Overview
         </TabsTrigger>
-        <TabsTrigger value="usage" className="flex items-center gap-2">
-          <Zap className="h-4 w-4" /> Usage
-        </TabsTrigger>
         <TabsTrigger value="billing" className="flex items-center gap-2">
           <CreditCard className="h-4 w-4" /> Billing
         </TabsTrigger>
         <TabsTrigger value="settings" className="flex items-center gap-2">
-          <Settings className="h-4 w-4" /> Settings
+          <Settings className="h-4 w-4" /> General
         </TabsTrigger>
         <TabsTrigger value="brightid" className="flex items-center gap-2">
-          <SunDimIcon className="h-5 w-5" /> Bright ID
+          <SunDimIcon className="h-5 w-5" /> Verification
         </TabsTrigger>
         <TabsTrigger value="preview" className="flex items-center gap-2">
           <View className="h-4 w-4" /> Preview
@@ -44,11 +41,11 @@ export function ProjectTabs({ project }: { project: Project }) {
       <TabsContent value="overview">
         <OverviewSection project={project} />
       </TabsContent>
-      <TabsContent value="usage">
-        <ProjectUsage project={project} />
-      </TabsContent>
       <TabsContent value="billing">
-        <ProjectBilling project={project} />
+        <div className="space-y-6">
+          <ProjectUsage project={project} />
+          <ProjectBilling project={project} />
+        </div>
       </TabsContent>
       <TabsContent value="settings">
         <SettingsTab project={project} />

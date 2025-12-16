@@ -362,64 +362,6 @@ export function BrightIdSettingsForm({
           </CardContent>
         </Card>
 
-        {/* Public Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Public Information</CardTitle>
-            <CardDescription>
-              Shown to users in the BrightID app
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} value={field.value ?? ""} rows={4} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="links"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Links (one per line)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      rows={4}
-                      placeholder="Website:https://example.com\nDiscord:https://discord.gg/xyz"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="images"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URLs (one per line)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      rows={3}
-                      placeholder="https://example.com/logo.png"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
         {/* Callback */}
         <Card>
           <CardHeader>
