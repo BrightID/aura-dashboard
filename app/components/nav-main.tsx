@@ -39,16 +39,12 @@ export function NavMain({
         <SidebarMenu className="border-t pt-2">
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                tooltip={item.title}
-                className="hover:bg-accent/80 rounded-md"
-              >
+              <SidebarMenuButton asChild tooltip={item.title}>
                 <NavLink
                   to={item.url}
                   className={
                     pathname === item.url
-                      ? "bg-secondary text-accent-foreground"
+                      ? "bg-secondary text-secondary-foreground"
                       : ""
                   }
                 >
