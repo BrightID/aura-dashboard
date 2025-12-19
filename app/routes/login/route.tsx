@@ -1,4 +1,5 @@
 import { Outlet } from "react-router"
+import "@/routes/_panel/styles.css"
 
 export default function LoginLayout() {
   return (

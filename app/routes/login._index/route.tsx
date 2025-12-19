@@ -24,6 +24,7 @@ import {
 } from "firebase/auth"
 import { toast } from "sonner"
 import { IconBrandApple, IconBrandGoogle } from "@tabler/icons-react"
+import { useMutation } from "@tanstack/react-query"
 
 const formSchema = z.object({
   email: z.email(),
@@ -38,14 +39,18 @@ function LoginScreen() {
 
   const loginForm = useForm<FormData>({ resolver: zodResolver(formSchema) })
   const signupForm = useForm<FormData>({ resolver: zodResolver(formSchema) })
-
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (data: FormData) =>
+      signInWithEmailAndPassword(auth, data.email, data.password),
+    mutationKey: ["login-with-password"],
+  })
   useEffect(() => {
     if (user) navigate("/dashboard")
   }, [user, navigate])
 
   const onLogin = async (data: FormData) => {
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password)
+      await mutateAsync(data)
     } catch (e) {
       toast((e as Error).message)
     }
@@ -116,6 +121,7 @@ function LoginScreen() {
               </div>
 
               <Button
+                disabled={isPending}
                 type="submit"
                 className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
               >
@@ -162,6 +168,7 @@ function LoginScreen() {
               </div>
 
               <Button
+                disabled={isPending}
                 type="submit"
                 className="w-full ripple-effect hover-lift font-sans font-bold py-5 transition-all duration-300"
               >
